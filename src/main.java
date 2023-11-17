@@ -27,8 +27,8 @@ public class main {
             return;
         }
 
-        Grafo grafo = new Grafo(file);
-        if (grafo.getMatrix()==null) return;
+        Grafo grafo = new Grafo();
+        if(!grafo.fillData(file)) return;
 
         int i = 0;
         int[] best_solution = new int[grafo.getVertices()];

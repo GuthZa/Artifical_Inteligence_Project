@@ -1,19 +1,19 @@
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Grafo {
 
     //Matriz de adjacentes
+    ArrayList<Integer> listVertices = new ArrayList<>();
     int[][] matrix;
     int vertices;
+    int edges;
     int interactions;
     int[] solution;
 
-    public Grafo(File file) throws IOException {
-
-        fillData(file);
-    }
+    public Grafo() {}
 
     public int trepa_colinas() {
         int cost, neighborCost;
@@ -73,15 +73,22 @@ public class Grafo {
         return neighbor_Solution;
     }
 
-    private void fillData(File file) throws IOException {
+    public boolean fillData(File file) throws IOException {
         Scanner scanner = new Scanner(file);
 
+        scanner.next();
         if (scanner.hasNextInt()) {
             this.interactions = scanner.nextInt();
+            scanner.next();
+            scanner.next();
             this.vertices = scanner.nextInt();
+            this.edges = scanner.nextInt();
 
-            this.solution = new int[vertices];
+            this.solution = new int[interactions];
 
+            for (int i = 0; i < vertices; i++) {
+                break;
+            }
             this.matrix = new int[vertices][vertices];
 
             for (int i = 0; i < vertices; i++) {
@@ -91,7 +98,9 @@ public class Grafo {
             }
         } else {
             System.out.println("Empty File!");
+            return false;
         }
+        return true;
     }
 
     public void create_Start_Solution() {
