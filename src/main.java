@@ -31,23 +31,23 @@ public class main {
 
         int i = 0;
         int[] best_solution = new int[graph.getVertices()];
-        for (; i < runs; i++) {
-            System.out.println("Initial: ");
-            graph.create_Start_Solution();
-            graph.printSolution(graph.getSolution());
-
-            custo = graph.trepa_colinas();
-            System.out.println("\nRep: " + i);
-            graph.printSolution(graph.getSolution());
-            System.out.println("Final cost: " + custo);
-            mbf += custo;
-            if (i == 0 || melhor_custo > custo) {
-                melhor_custo = custo;
-                best_solution = graph.getSolution();
-            }
-            //For better readability
-            System.out.println();
-        }
+//        for (; i < runs; i++) {
+//            System.out.println("Initial: ");
+//            graph.create_Start_Solution();
+//            graph.printSolution(graph.getSolution());
+//
+//            custo = graph.hill_climbing();
+//            System.out.println("\nRep: " + i);
+//            graph.printSolution(graph.getSolution());
+//            System.out.println("Final cost: " + custo);
+//            mbf += custo;
+//            if (i == 0 || melhor_custo > custo) {
+//                melhor_custo = custo;
+//                best_solution = graph.getSolution();
+//            }
+//            //For better readability
+//            System.out.println();
+//        }
 
         System.out.println("\n\nMBF: " + mbf/i);
         System.out.println("Best solution found: ");
