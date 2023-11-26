@@ -98,12 +98,15 @@ public class Graph {
         this.solution = new int[solution_size];
 
         ArrayList<Integer> end = new ArrayList<>(), cost = new ArrayList<>();
-        int start = 1, last_number = 0;
+        int start = 0, last_number = 0;
         boolean last_cycle = false;
-        for (int i = 0; i < edges; i++) {
-            if (!scanner.next().equals("e"))
+        String line = null;
+        for (int i = 0; i <= edges; i++) {
+            //to read the "e" and the last lines
+            if (!scanner.hasNextLine() || ( !(line = scanner.next()).isEmpty() && !line.equals("e") ))
                 last_cycle = true;
-            if (last_cycle || (start = Integer.parseInt(scanner.next())) != last_number) {
+
+            if (last_cycle || ((start = Integer.parseInt(scanner.next())) != last_number && last_number != 0)) {
                 //Should have the same size, since it's the number of connection of the point
                 int[] end_list = new int[end.size()];
                 int[] cost_list = new int[cost.size()];

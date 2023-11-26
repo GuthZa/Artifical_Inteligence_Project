@@ -23,10 +23,10 @@ public class Edge {
 
     @Override
     public String toString() {
-        return "Edge{" +
-                "start=" + start +
-                ", end=" + Arrays.toString(end) +
-                ", cost=" + Arrays.toString(cost) +
-                '}';
+        return "Edge { " +
+                "\n\tstart=" + start +
+                ",\n\tend =" + Arrays.toString(end) +
+                ",\n\tcost=" + Arrays.toString(cost) +
+                "\n}";
     }
 }

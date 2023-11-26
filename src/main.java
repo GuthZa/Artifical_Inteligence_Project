@@ -49,9 +49,9 @@ public class main {
 //            System.out.println();
 //        }
 
-        System.out.println("\n\nMBF: " + mbf/i);
-        System.out.println("Best solution found: ");
-        graph.printSolution(best_solution);
-        System.out.println("Final cost: " + melhor_custo);
+//        System.out.println("\n\nMBF: " + mbf/i);
+//        System.out.println("Best solution found: ");
+//        graph.printSolution(best_solution);
+//        System.out.println("Final cost: " + melhor_custo);
     }
 }
