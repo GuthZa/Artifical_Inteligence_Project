@@ -100,10 +100,12 @@ public class Graph {
         ArrayList<Integer> end = new ArrayList<>(), cost = new ArrayList<>();
         int start = 0, last_number = 0;
         boolean last_cycle = false;
-
-        if (scanner.hasNextLine())
-            scanner.next(); //gets rid of the first "e"
+        String line;
         for (int i = 0; i <= edges; i++) {
+            //to read the "e" and the last lines
+            if (!scanner.hasNextLine() || !scanner.next().equals("e"))
+                last_cycle = true;
+
             if (last_cycle || ((start = Integer.parseInt(scanner.next())) != last_number && last_number != 0)) {
                 //Should have the same size, since it's the number of connection of the point
                 int[] end_list = new int[end.size()];
@@ -124,16 +126,6 @@ public class Graph {
                 cost.add(Integer.parseInt(scanner.next()));
                 last_number = start;
             }
-            //check for all lines until it finds one started by e
-            //if it doesn't find then all are empty lines or trash
-            while (scanner.hasNextLine()) {
-                if (!(line = scanner.next()).isEmpty() && line.equals("e")) {
-                    break;
-                }
-            }
-            //to read the "e" and the last lines
-            if (!scanner.hasNextLine())
-                last_cycle = true;
         }
 
         edgeList.forEach(System.out::println);
