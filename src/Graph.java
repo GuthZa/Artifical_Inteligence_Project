@@ -3,17 +3,20 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
-public class Grafo {
+public class Graph {
 
-    //Matriz de adjacentes
-    ArrayList<Integer> listVertices = new ArrayList<>();
-    int[][] matrix;
+    ArrayList<Edge> edgeList;
     int vertices;
     int edges;
     int interactions;
     int[] solution;
 
-    public Grafo() {}
+    public Graph(File file) throws IOException {
+        edgeList = new ArrayList<>();
+
+        fillData(file);
+        System.out.println(this);
+    }
 
     public int trepa_colinas() {
         int cost, neighborCost;
@@ -35,19 +38,21 @@ public class Grafo {
     }
 
     private int calculate_Cost(int[] sol) {
-        int total = 0;
 
-        for (int i = 0; i < vertices; i++) {
-            if (sol[i]==0)
-            {
-                for (int j = 0; j < vertices; j++) {
-                    if (sol[j]==1 && matrix[i][j]==1)
-                        total++;
-                }
-            }
-        }
-
-        return total;
+        //to redo
+//        int total = 0;
+//
+//        for (int i = 0; i < vertices; i++) {
+//            if (sol[i]==0)
+//            {
+//                for (int j = 0; j < vertices; j++) {
+//                    if (sol[j]==1 && matrix[i][j]==1)
+//                        total++;
+//                }
+//            }
+//        }
+//
+        return 42;
     }
 
     private int[] create_Neighbors() {
@@ -73,34 +78,38 @@ public class Grafo {
         return neighbor_Solution;
     }
 
-    public boolean fillData(File file) throws IOException {
+    public void fillData(File file) throws IOException {
         Scanner scanner = new Scanner(file);
 
-        scanner.next();
+        if(!scanner.next().equals("k")) {
+            System.out.println("Wrong file type");
+            return;
+        }
         if (scanner.hasNextInt()) {
+            if(!scanner.next().equals("p") && !scanner.next().equals("edge"))
+                return;
+
             this.interactions = scanner.nextInt();
-            scanner.next();
-            scanner.next();
             this.vertices = scanner.nextInt();
-            this.edges = scanner.nextInt();
 
-            this.solution = new int[interactions];
+            this.solution = new int[vertices];
 
-            for (int i = 0; i < vertices; i++) {
-                break;
-            }
-            this.matrix = new int[vertices][vertices];
+            int start, end, cost;
 
             for (int i = 0; i < vertices; i++) {
+                if (!scanner.next().equals("e"))
+                    return;
                 for (int j = 0; j < vertices; j++) {
-                    matrix[i][j] = scanner.nextInt();
+                    start = scanner.nextInt();
+                    end = scanner.nextInt();
+                    cost = scanner.nextInt();
+
+                    edgeList.add(new Edge(start,end,cost));
                 }
             }
         } else {
             System.out.println("Empty File!");
-            return false;
         }
-        return true;
     }
 
     public void create_Start_Solution() {
@@ -120,10 +129,6 @@ public class Grafo {
         return solution;
     }
 
-    public int[][] getMatrix() {
-        return matrix;
-    }
-
     public int getVertices() {
         return vertices;
     }
@@ -138,16 +143,6 @@ public class Grafo {
 
     private void setInteractions(int interactions) {
         this.interactions = interactions;
-    }
-
-    public void printMatrix(){
-        //For debugging, to have a visualisation
-         for (int i = 0; i < vertices; i++) {
-             for (int j = 0; j < vertices; j++) {
-                 System.out.print(matrix[i][j]);
-             }
-             System.out.println();
-         }
     }
 
     public void printSolution(int[] solution) {

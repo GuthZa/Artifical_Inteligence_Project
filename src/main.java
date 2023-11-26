@@ -27,24 +27,23 @@ public class main {
             return;
         }
 
-        Grafo grafo = new Grafo();
-        if(!grafo.fillData(file)) return;
+        Graph graph = new Graph(file);
 
         int i = 0;
-        int[] best_solution = new int[grafo.getVertices()];
+        int[] best_solution = new int[graph.getVertices()];
         for (; i < runs; i++) {
             System.out.println("Initial: ");
-            grafo.create_Start_Solution();
-            grafo.printSolution(grafo.getSolution());
+            graph.create_Start_Solution();
+            graph.printSolution(graph.getSolution());
 
-            custo = grafo.trepa_colinas();
+            custo = graph.trepa_colinas();
             System.out.println("\nRep: " + i);
-            grafo.printSolution(grafo.getSolution());
+            graph.printSolution(graph.getSolution());
             System.out.println("Final cost: " + custo);
             mbf += custo;
             if (i == 0 || melhor_custo > custo) {
                 melhor_custo = custo;
-                best_solution = grafo.getSolution();
+                best_solution = graph.getSolution();
             }
             //For better readability
             System.out.println();
@@ -52,7 +51,7 @@ public class main {
 
         System.out.println("\n\nMBF: " + mbf/i);
         System.out.println("Best solution found: ");
-        grafo.printSolution(best_solution);
+        graph.printSolution(best_solution);
         System.out.println("Final cost: " + melhor_custo);
     }
 }
