@@ -7,7 +7,9 @@ import java.util.Scanner;
 public class Graph {
 
     ArrayList<Edge> edgeList;
+    //p, edge, k
     int vertices, edges, solution_size;
+    int max_Edge, min_Edge;
     int[] solution;
 
     public Graph(File file) throws IOException {
@@ -100,12 +102,15 @@ public class Graph {
         ArrayList<Integer> end = new ArrayList<>(), cost = new ArrayList<>();
         int start = 0, last_number = 0;
         boolean last_cycle = false;
-        String line;
         for (int i = 0; i <= edges; i++) {
             //to read the "e" and the last lines
-            if (!scanner.hasNextLine() || !scanner.next().equals("e"))
+            if (!scanner.hasNextLine() || !scanner.next().equals("e")) {
                 last_cycle = true;
+                //saves the highest number, for generation purpose
+                max_Edge = start;
+            }
 
+            //check if it's the first or last line or if we changed edge
             if (last_cycle || ((start = Integer.parseInt(scanner.next())) != last_number && last_number != 0)) {
                 //Should have the same size, since it's the number of connection of the point
                 int[] end_list = new int[end.size()];
@@ -117,18 +122,22 @@ public class Graph {
                 for (int k = 0; k < cost.size(); k++) {
                     cost_list[k] = cost.get(k);
                 }
+                //create and edge and empty the array
                 edgeList.add(new Edge(last_number, end_list, cost_list));
                 end = new ArrayList<>();
                 cost = new ArrayList<>();
             }
+
+            //Saves the first number, to use for random generation
+            if (start != last_number && last_number == 0)
+                min_Edge = start;
+
             if (!last_cycle) {
                 end.add(Integer.parseInt(scanner.next()));
                 cost.add(Integer.parseInt(scanner.next()));
                 last_number = start;
             }
         }
-
-        edgeList.forEach(System.out::println);
     }
 
     public void create_Start_Solution() {
@@ -168,4 +177,7 @@ public class Graph {
         System.out.println();
     }
 
+    public void print_Edge_List() {
+        edgeList.forEach(System.out::println);
+    }
 }
