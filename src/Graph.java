@@ -143,7 +143,8 @@ public class Graph {
     public void create_Start_Solution() {
         Random random = new Random();
         for (int i = 0; i < solution_size; i++) {
-            solution[i] = random.nextInt(10);
+            //generates a random number between the highest edge and the lowest edge
+            solution[i] = random.nextInt(max_Edge - min_Edge) + min_Edge;
         }
         //TODO CREATE SOLUTION WITH RANDOM NUMBER BETWEEN MIN_EDGE & MAX_EDGE
 //        for (int i = 0, x; i < solution_size / 2; i++) {
