@@ -9,6 +9,7 @@ public class Graph {
     ArrayList<Edge> edgeList;
     //p, edge, k
     int vertices, edges, solution_size;
+    //Saves the smallest and highest numbered edge
     int max_Edge, min_Edge;
     int[] solution;
 
