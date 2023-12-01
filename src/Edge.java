@@ -1,32 +1,40 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Edge {
     int start;
-    int[] end, cost;
+    ArrayList<Integer> end, cost;
 
-    public Edge(int start, int[] end_list, int[] cost_list) {
+    public Edge(int start, int end, int cost) {
+        this.end = new ArrayList<>();
+        this.cost = new ArrayList<>();
         this.start = start;
-        this.end = end_list;
-        this.cost = cost_list;
+        this.end.add(end);
+        this.cost.add(cost);
     }
     public int getStart() {
         return start;
     }
 
-    public int[] getEnd() {
+    public ArrayList<Integer> getEnd() {
         return end;
     }
 
-    public int[] getCost() {
+    public ArrayList<Integer> getCost() {
         return cost;
+    }
+
+    public void add_Edge(int end, int cost) {
+        this.end.add(end);
+        this.cost.add(cost);
     }
 
     @Override
     public String toString() {
-        return "Edge { " +
-                "\n\tstart=" + start +
-                ",\n\tend =" + Arrays.toString(end) +
-                ",\n\tcost=" + Arrays.toString(cost) +
-                "\n}";
+        return "Edge{" +
+                "start=" + start +
+                ", end=" + end +
+                ", cost=" + cost +
+                '}';
     }
 }

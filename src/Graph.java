@@ -1,63 +1,41 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Graph {
 
     ArrayList<Edge> edgeList;
+    int[][] matrix;
+
     //p, edge, k
-    int vertices, edges, solution_size;
-    //Saves the smallest and highest numbered edge
-    int max_Edge, min_Edge;
+    int vertices, edges, k;
     int[] solution;
 
     public Graph(File file) throws IOException {
-        edgeList = new ArrayList<>();
-
         fillData(file);
     }
 
     public int hill_climbing() {
-        int cost, neighborCost;
-
-        //calculate the cost of the Initial Solution
-        cost = calculate_Cost(solution);
-        for (int i = 0; i < 10; i++) { //TODO CHANGE HARDCODED NUMBER TO THE NUMBER ON INTERACTION
-            //Create the neighbor
-            int[] new_Solution = create_Neighbors();
-            //Calculates the cost of the new neighbor
-            neighborCost = calculate_Cost(new_Solution);
-            //If the neighbor cost is lower than the initial cost, swap them (Minimization problem)
-            if (neighborCost < cost) {
-                this.solution = new_Solution;
-                cost = neighborCost;
-            }
-        }
-        return cost;
-    }
-
-    private int calculate_Cost(int[] sol) {
-
-        //to redo
-//        int total = 0;
+        int cost = 0, neighborCost;
 //
-//        for (int i = 0; i < vertices; i++) {
-//            if (sol[i]==0)
-//            {
-//                for (int j = 0; j < vertices; j++) {
-//                    if (sol[j]==1 && matrix[i][j]==1)
-//                        total++;
-//                }
+//        //calculate the cost of the Initial Solution
+//        cost = calculate_Cost(solution);
+//        for (int i = 0; i < 10; i++) { //TODO CHANGE HARDCODED NUMBER TO THE NUMBER ON INTERACTION
+//            //Create the neighbor
+//            int[] new_Solution = create_Neighbors();
+//            //Calculates the cost of the new neighbor
+//            neighborCost = calculate_Cost(new_Solution);
+//            //If the neighbor cost is lower than the initial cost, swap them (Minimization problem)
+//            if (neighborCost < cost) {
+//                this.solution = new_Solution;
+//                cost = neighborCost;
 //            }
 //        }
-//
-        return 42;
+        return cost;
     }
-
     private int[] create_Neighbors() {
-        int[] neighbor_Solution = new int[solution_size];
+        int[] neighbor_Solution = new int[k];
         Random random = new Random();
         //copy everything from the solution into the neighbor_solution
 //        if (vertices >= 0) System.arraycopy(solution, 0, neighbor_Solution, 0, solution_size);
@@ -87,65 +65,39 @@ public class Graph {
             return;
         }
 
-        //Receive K, such that exists a smaller sample of size k to find the minimum cost
-        this.solution_size = Integer.parseInt(scanner.next());
+        //number of 1s in the solution
+        this.k = Integer.parseInt(scanner.next());
+
         //just another check to see if were on the right track
-        if (!scanner.next().equals("p"))
-            return;
-        if (!scanner.next().equals("edge"))
-            return;
+        if (!scanner.next().equals("p")) return;
+        if (!scanner.next().equals("edge")) return;
 
-        this.vertices = Integer.parseInt(scanner.next());
-        this.edges = Integer.parseInt(scanner.next());
+        this.vertices = Integer.parseInt(scanner.next()); //p
+        this.edges = Integer.parseInt(scanner.next()); //edge
 
-        this.solution = new int[solution_size];
+        this.solution = new int[vertices];
 
-        ArrayList<Integer> end = new ArrayList<>(), cost = new ArrayList<>();
-        int start = 0, last_number = 0;
-        boolean last_cycle = false;
-        for (int i = 0; i <= edges; i++) {
-            //to read the "e" and the last lines
-            if (!scanner.hasNextLine() || !scanner.next().equals("e")) {
-                last_cycle = true;
-                //saves the highest number, for generation purpose
-                max_Edge = start;
-            }
+        this.matrix = new int[vertices][vertices];
 
-            //check if it's the first or last line or if we changed edge
-            if (last_cycle || ((start = Integer.parseInt(scanner.next())) != last_number && last_number != 0)) {
-                //Should have the same size, since it's the number of connection of the point
-                int[] end_list = new int[end.size()];
-                int[] cost_list = new int[cost.size()];
-                //fill the array with the cost and point values
-                for (int k = 0; k < end.size(); k++) {
-                    end_list[k] = end.get(k);
-                }
-                for (int k = 0; k < cost.size(); k++) {
-                    cost_list[k] = cost.get(k);
-                }
-                //create and edge and empty the array
-                edgeList.add(new Edge(last_number, end_list, cost_list));
-                end = new ArrayList<>();
-                cost = new ArrayList<>();
-            }
+        int start, end, cost;
 
-            //Saves the first number, to use for random generation
-            if (start != last_number && last_number == 0)
-                min_Edge = start;
+        while (scanner.hasNextLine()) {
+            if(!scanner.next().equals("e")) return;
 
-            if (!last_cycle) {
-                end.add(Integer.parseInt(scanner.next()));
-                cost.add(Integer.parseInt(scanner.next()));
-                last_number = start;
-            }
+            start = Integer.parseInt(scanner.next());
+            end = Integer.parseInt(scanner.next());
+            cost = Integer.parseInt(scanner.next());
+
+            matrix[start - 1][end - 1] = cost;
+            matrix[end - 1][start - 1] = cost;
         }
     }
 
     public void create_Start_Solution() {
         Random random = new Random();
-        for (int i = 0; i < solution_size; i++) {
+        for (int i = 0; i < k; i++) {
             //generates a random number between the highest edge and the lowest edge
-            solution[i] = random.nextInt(max_Edge - min_Edge) + min_Edge;
+            solution[i] = random.nextInt(vertices - 1);
         }
         //TODO CREATE SOLUTION WITH RANDOM NUMBER BETWEEN MIN_EDGE & MAX_EDGE
 //        for (int i = 0, x; i < solution_size / 2; i++) {
@@ -167,19 +119,24 @@ public class Graph {
 
     public void printSolution(int[] solution) {
         System.out.print("0s: ");
-        for (int i = 0; i < solution_size; i++) {
+        for (int i = 0; i < k; i++) {
             if (solution[i]==0)
                 System.out.print(i + " ");
         }
         System.out.print("\n1s: ");
-        for (int i = 0; i < solution_size; i++) {
+        for (int i = 0; i < k; i++) {
             if (solution[i]==1)
                 System.out.print(i + " ");
         }
         System.out.println();
     }
 
-    public void print_Edge_List() {
-        edgeList.forEach(System.out::println);
+    public void printMatrix() {
+        for (int i = 0; i < vertices; i++) {
+            for (int j = 0; j < vertices; j++) {
+                System.out.print(matrix[i][j] + " ");
+            }
+            System.out.println();
+        }
     }
 }
