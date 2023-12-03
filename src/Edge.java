@@ -18,4 +18,13 @@ public class Edge {
     public int getCost() {
         return cost;
     }
+
+    @Override
+    public String toString() {
+        return "Edge{" +
+                "start=" + start +
+                ", end=" + end +
+                ", cost=" + cost +
+                '}';
+    }
 }

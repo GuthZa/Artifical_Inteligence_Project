@@ -5,52 +5,52 @@ import java.util.Scanner;
 
 public class Graph {
 
-    ArrayList<Edge> edgeList;
+    private ArrayList<Edge> edgeList;
 
     //p, edge, k
-    int vertices, edges, k;
-    int[] solution;
+    private int vertices, edges, k;
+    private int[] solution;
 
     public Graph(File file) throws IOException {
         fillData(file);
     }
 
     public int hill_climbing() {
-        int cost = 0, neighborCost;
-//
-//        //calculate the cost of the Initial Solution
-//        cost = calculate_Cost(solution);
-//        for (int i = 0; i < 10; i++) { //TODO CHANGE HARDCODED NUMBER TO THE NUMBER ON INTERACTION
-//            //Create the neighbor
-//            int[] new_Solution = create_Neighbors();
-//            //Calculates the cost of the new neighbor
-//            neighborCost = calculate_Cost(new_Solution);
-//            //If the neighbor cost is lower than the initial cost, swap them (Minimization problem)
-//            if (neighborCost < cost) {
-//                this.solution = new_Solution;
-//                cost = neighborCost;
-//            }
-//        }
+        int cost, neighborCost;
+
+        //calculate the cost of the Initial Solution
+        cost = func.calculate_cost(solution, edgeList, vertices);
+        for (int i = 0; i < 100; i++) { //TODO CHANGE HARDCODED NUMBER TO THE NUMBER ON INTERACTION
+            //Create the neighbor
+            int[] new_Solution = create_Neighbors();
+            //Calculates the cost of the new neighbor
+            neighborCost = func.calculate_cost(new_Solution, edgeList, vertices);
+            //If the neighbor cost is lower than the initial cost, swap them (Minimization problem)
+            if (neighborCost != 0 && neighborCost < cost) {
+                this.solution = new_Solution;
+                cost = neighborCost;
+            }
+        }
         return cost;
     }
     private int[] create_Neighbors() {
-        int[] neighbor_Solution = new int[k];
+        int[] neighbor_Solution = new int[vertices];
         Random random = new Random();
         //copy everything from the solution into the neighbor_solution
-//        if (vertices >= 0) System.arraycopy(solution, 0, neighbor_Solution, 0, solution_size);
-//        int p1, p2;
-//        // Find positions with value 0
-//        do {
-//            p1 = random.nextInt(vertices);
-//        } while (neighbor_Solution[p1] != 0);
-//
-//        do {
-//            p2 = random.nextInt(vertices);
-//        } while (neighbor_Solution[p2] != 1);
-//
-//        //Switch
-//        neighbor_Solution[p1] = 1;
-//        neighbor_Solution[p2] = 0;
+        if (vertices >= 0) System.arraycopy(solution, 0, neighbor_Solution, 0, vertices);
+        int p1, p2;
+        // Find positions with value 0
+        do {
+            p1 = random.nextInt(vertices - 1);
+        } while (neighbor_Solution[p1] != 0);
+        //find positions with value 1
+        do {
+            p2 = random.nextInt(vertices - 1);
+        } while (neighbor_Solution[p2] != 1);
+
+        //Switch
+        neighbor_Solution[p1] = 1;
+        neighbor_Solution[p2] = 0;
 
         return neighbor_Solution;
     }
@@ -63,6 +63,8 @@ public class Graph {
             System.out.println("Wrong file type");
             return;
         }
+
+        edgeList = new ArrayList<>();
 
         //number of 1s in the solution
         this.k = Integer.parseInt(scanner.next());
@@ -91,17 +93,16 @@ public class Graph {
 
     public void create_Start_Solution() {
         Random random = new Random();
-        for (int i = 0; i < k; i++) {
-            //generates a random number between the highest edge and the lowest edge
-            solution[i] = random.nextInt(vertices - 1);
+        int position;
+        for (int i = 0; i < vertices; i++) {
+            solution[i] = 0;
         }
-        //TODO CREATE SOLUTION WITH RANDOM NUMBER BETWEEN MIN_EDGE & MAX_EDGE
-//        for (int i = 0, x; i < solution_size / 2; i++) {
-//            do {
-//                x = random.nextInt(vertices);
-//            } while (solution[x] != 0);
-//            solution[x] = 1;
-//        }
+        for (int i = 0; i < k; i++) {
+            do {
+                position = random.nextInt(vertices - 1);
+            } while (solution[position]!=0);
+            solution[position] = 1;
+        }
     }
 
     public int[] getSolution() {
@@ -112,17 +113,28 @@ public class Graph {
         return vertices;
     }
 
+    public int getEdges() {
+        return edges;
+    }
+
+    public ArrayList<Edge> getEdgeList() {
+        return edgeList;
+    }
+
+    public int getK() {
+        return k;
+    }
 
     public void printSolution(int[] solution) {
         System.out.print("0s: ");
-        for (int i = 0; i < k; i++) {
+        for (int i = 0; i < vertices; i++) {
             if (solution[i]==0)
-                System.out.print(i + " ");
+                System.out.print((i+1) + " ");
         }
         System.out.print("\n1s: ");
-        for (int i = 0; i < k; i++) {
+        for (int i = 0; i < vertices; i++) {
             if (solution[i]==1)
-                System.out.print(i + " ");
+                System.out.print((i+1) + " ");
         }
         System.out.println();
     }
