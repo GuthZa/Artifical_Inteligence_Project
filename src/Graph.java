@@ -6,7 +6,6 @@ import java.util.Scanner;
 public class Graph {
 
     ArrayList<Edge> edgeList;
-    int[][] matrix;
 
     //p, edge, k
     int vertices, edges, k;
@@ -77,8 +76,6 @@ public class Graph {
 
         this.solution = new int[vertices];
 
-        this.matrix = new int[vertices][vertices];
-
         int start, end, cost;
 
         while (scanner.hasNextLine()) {
@@ -88,8 +85,7 @@ public class Graph {
             end = Integer.parseInt(scanner.next());
             cost = Integer.parseInt(scanner.next());
 
-            matrix[start - 1][end - 1] = cost;
-            matrix[end - 1][start - 1] = cost;
+            edgeList.add(new Edge(start, end, cost));
         }
     }
 
@@ -129,14 +125,5 @@ public class Graph {
                 System.out.print(i + " ");
         }
         System.out.println();
-    }
-
-    public void printMatrix() {
-        for (int i = 0; i < vertices; i++) {
-            for (int j = 0; j < vertices; j++) {
-                System.out.print(matrix[i][j] + " ");
-            }
-            System.out.println();
-        }
     }
 }
