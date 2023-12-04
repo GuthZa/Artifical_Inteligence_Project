@@ -30,6 +30,15 @@ public class Graph {
                 this.solution = new_Solution;
                 cost = neighborCost;
             }
+
+            //Generate a second neighbor
+            //Calculates the cost of the new neighbor
+            neighborCost = func.calculate_cost(new_Solution, edgeList, vertices);
+            //If the neighbor cost is lower than the initial cost, swap them (Minimization problem)
+            if (neighborCost != 0 && neighborCost < cost) {
+                this.solution = new_Solution;
+                cost = neighborCost;
+            }
         }
         return cost;
     }
