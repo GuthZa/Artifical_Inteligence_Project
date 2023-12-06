@@ -34,15 +34,14 @@ public class main {
         int[] best_solution = new int[graph.getVertices()];
 
         System.out.println("Initial: ");
+        graph.create_Start_Solution();
+        graph.printSolution(graph.getSolution());
         for (; i < runs; i++) {
-            graph.create_Start_Solution();
-            graph.printSolution(graph.getSolution());
-            System.out.println();
 
             custo = graph.hill_climbing();
             System.out.println("Rep: " + (i+1));
-            graph.printSolution(graph.getSolution());
             System.out.println("Final cost: " + custo);
+            graph.printSolution(graph.getSolution());
             mbf += custo;
             if (i == 0 || melhor_custo > custo) {
                 melhor_custo = custo;

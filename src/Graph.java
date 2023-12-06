@@ -8,7 +8,7 @@ public class Graph {
     private ArrayList<Edge> edgeList;
 
     //p, edge, k
-    private int vertices, edges, k;
+    private int vertices, k;
     private int[] solution;
 
     public Graph(File file) throws IOException {
@@ -20,11 +20,13 @@ public class Graph {
 
         //calculate the cost of the Initial Solution
         cost = func.calculate_cost(solution, edgeList, vertices);
-        for (int i = 0; i < 100; i++) { //TODO CHANGE HARDCODED NUMBER TO THE NUMBER ON INTERACTION
+        for (int i = 0; i < 1; i++) { //TODO CHANGE HARDCODED NUMBER TO THE NUMBER ON INTERACTION
             //Create the neighbor
             int[] new_Solution = create_Neighbors();
+
             //Calculates the cost of the new neighbor
             neighborCost = func.calculate_cost(new_Solution, edgeList, vertices);
+
             //If the neighbor cost is lower than the initial cost, swap them (Minimization problem)
             if (neighborCost != 0 && neighborCost < cost) {
                 this.solution = new_Solution;
@@ -83,7 +85,8 @@ public class Graph {
         if (!scanner.next().equals("edge")) return;
 
         this.vertices = Integer.parseInt(scanner.next()); //p
-        this.edges = Integer.parseInt(scanner.next()); //edge
+        //no use for this value, just saves the number of points in the graph
+        scanner.next(); //edge
 
         this.solution = new int[vertices];
 
@@ -121,29 +124,10 @@ public class Graph {
     public int getVertices() {
         return vertices;
     }
-
-    public int getEdges() {
-        return edges;
-    }
-
-    public ArrayList<Edge> getEdgeList() {
-        return edgeList;
-    }
-
-    public int getK() {
-        return k;
-    }
-
     public void printSolution(int[] solution) {
-        System.out.print("0s: ");
+        System.out.print("-> ");
         for (int i = 0; i < vertices; i++) {
-            if (solution[i]==0)
-                System.out.print((i+1) + " ");
-        }
-        System.out.print("\n1s: ");
-        for (int i = 0; i < vertices; i++) {
-            if (solution[i]==1)
-                System.out.print((i+1) + " ");
+            System.out.print(solution[i]);
         }
         System.out.println();
     }
