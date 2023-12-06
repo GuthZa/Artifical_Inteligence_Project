@@ -33,10 +33,10 @@ public class main {
         int i = 0;
         int[] best_solution = new int[graph.getVertices()];
 
-        System.out.println("Initial: ");
-        graph.create_Start_Solution();
-        graph.printSolution(graph.getSolution());
         for (; i < runs; i++) {
+            System.out.println("Initial: ");
+            graph.create_Start_Solution();
+            graph.printSolution(graph.getSolution());
 
             custo = graph.hill_climbing();
             System.out.println("Rep: " + (i+1));

@@ -20,7 +20,7 @@ public class Graph {
 
         //calculate the cost of the Initial Solution
         cost = func.calculate_cost(solution, edgeList, vertices);
-        for (int i = 0; i < 1; i++) { //TODO CHANGE HARDCODED NUMBER TO THE NUMBER ON INTERACTION
+        for (int i = 0; i < 10; i++) { //TODO CHANGE HARDCODED NUMBER TO THE NUMBER ON INTERACTION
             //Create the neighbor
             int[] new_Solution = create_Neighbors();
 
@@ -106,15 +106,17 @@ public class Graph {
     public void create_Start_Solution() {
         Random random = new Random();
         int position;
-        for (int i = 0; i < vertices; i++) {
-            solution[i] = 0;
-        }
-        for (int i = 0; i < k; i++) {
-            do {
-                position = random.nextInt(vertices - 1);
-            } while (solution[position]!=0);
-            solution[position] = 1;
-        }
+        do {
+            for (int i = 0; i < vertices; i++) {
+                solution[i] = 0;
+            }
+            for (int i = 0; i < k; i++) {
+                do {
+                    position = random.nextInt(vertices);
+                } while (solution[position] != 0);
+                solution[position] = 1;
+            }
+        } while (func.calculate_cost(solution, edgeList, vertices) == 0);
     }
 
     public int[] getSolution() {
