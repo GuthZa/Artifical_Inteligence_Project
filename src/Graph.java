@@ -7,6 +7,8 @@ public class Graph {
 
     private ArrayList<Edge> edgeList;
 
+    private static final int NUM_ITE = 10;
+
     //p, edge, k
     private int vertices, k;
     private int[] solution;
@@ -20,7 +22,7 @@ public class Graph {
 
         //calculate the cost of the Initial Solution
         cost = func.calculate_cost(solution, edgeList, vertices);
-        for (int i = 0; i < 10; i++) { //TODO CHANGE HARDCODED NUMBER TO THE NUMBER ON INTERACTION
+        for (int i = 0; i < NUM_ITE; i++) {
             //Create the neighbor
             int[] new_Solution = create_Neighbors();
 

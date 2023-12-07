@@ -4,7 +4,6 @@ import java.util.Scanner;
 
 public class main {
 
-    private static final int DEFAULT_RUNS = 10;
     public static void main(String[] args) throws IOException {
 
         String file_name;
