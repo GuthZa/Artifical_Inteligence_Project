@@ -8,7 +8,7 @@ public class func {
     }
 
     public static int calculate_cost(int[] solution, ArrayList<Edge> edgeList, int vertices) {
-        int total = 0;
+        int total;
         int[] copy = new int[vertices];
         /*
         Copy the number of 1s in the origin solution and copy
@@ -23,9 +23,12 @@ public class func {
         METODO HIBRIDO
         2 ABORDAGENS HIBRIDAS USANDO OS 2 ALGORITMOS
         */
-        for (Edge edge : edgeList) {
-            if (solution[edge.getStart() - 1] == 1 && solution[edge.getEnd() - 1] == 1) {
-                total += edge.getCost();
+
+        do {
+            total = 0;
+            for (Edge edge : edgeList) {
+                if (solution[edge.getStart() - 1] == 1 && solution[edge.getEnd() - 1] == 1) {
+                    total += edge.getCost();
                 /*
                 Make the positions that have valid connections 1
                 The idea is that by the end of all edges, you would have a
@@ -35,44 +38,41 @@ public class func {
                  you can get those that don't have connections
                 Making the solution invalid
                 */
-                copy[edge.getStart() - 1] = 1;
-                copy[edge.getEnd() - 1] = 1;
+                    copy[edge.getStart() - 1] = 1;
+                    copy[edge.getEnd() - 1] = 1;
+                }
             }
-        }
-        //If the copy is equal to the original, then the solution is valid
-        //Otherwise, one of the points did not have connections to other points in the solution
-        if (!Arrays.equals(copy, solution)) {
-            //Invalid Solution
-            return 0;
-        }
-        return total;
-
-        //solution ->
-        // [110011]
-        // [110010]
+            //If the copy is equal to the original, then the solution is valid
+            //Otherwise, one of the points did not have connections to other points in the solution
+            if (Arrays.equals(solution, copy)) {
+                return total;
+            } else { //invalid solution, repair it
+                repair(solution, copy, edgeList, vertices);
+            }
+        } while (true);
     }
 
-    private static void repair(int[] solution, int[] copy, ArrayList<Edge> edgeList, int vertices, int cost) {
+    private static void repair(int[] solution, int[] copy, ArrayList<Edge> edgeList, int vertices) {
         Random random = new Random();
         /*
-        Escoolher tantos pontos na solucao que estejam a 1 e na copia a 0
+        Escolher tantos pontos na solucao que estejam a 1 e na copia a 0
         trocar na solucao para 0 e colocar um ponto aleatorio na solucao a 1 de modo a que verifique
         edge.start == 1 && edge.end == 0 || edge.start == 0 && edge.end == 1
 
         posso precorrer a array ou gerar valores aleatoreos com edgeList.get(random)
          */
         int num_to_change;
-        do {
-            for (int i = 0; i < vertices; i++) {
-                if (solution[i] == 1 && copy[i] == 0) {
-                    do {
-                        num_to_change = edgeList.get(random.nextInt()).getStart();
-                    } while (solution[num_to_change] != 0);
-                    solution[num_to_change] = 1;
-                    copy[i] = 0;
-                }
+        for (int i = 0; i < vertices; i++) {
+            //Find the points where the copy was not evaluated
+            if (solution[i] == 1 && copy[i] == 0) {
+                //Get a random other point that is at 0
+                do {
+                    num_to_change = random.nextInt(vertices);
+                } while (solution[num_to_change] != 0);
+                //Swap them
+                solution[i] = 0;
+                solution[num_to_change] = 1;
             }
-            cost = calculate_cost(copy, edgeList, vertices);
-        } while (cost == 0);
+        }
     }
 }
