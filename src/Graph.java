@@ -13,8 +13,59 @@ public class Graph {
     private int vertices, k;
     private int[] solution;
 
-    public Graph(File file) throws IOException {
-        fillData(file);
+    public Graph() {
+        run();
+    }
+
+    public void run() {
+        String file_name;
+        int runs = 10, custo, melhor_custo = 0;
+        double mbf = 0.0;
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("File Name: ");
+        file_name = scanner.next();
+
+        File file = new File(file_name);
+        if (!file.exists()) {
+            System.out.println("Error opening the file");
+            return;
+        }
+
+        try {
+            fillData(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        int i = 0;
+        int[] best_solution = new int[vertices];
+
+        for (; i < runs; i++) {
+            System.out.println("Initial: ");
+            create_Start_Solution();
+            printSolution(solution);
+
+            func.repair(solution, solution, edgeList, vertices);
+
+            custo = hill_climbing();
+            System.out.println("Rep: " + (i+1));
+            System.out.println("Final cost: " + custo);
+            printSolution(solution);
+            mbf += custo;
+            if (i == 0 || melhor_custo > custo) {
+                melhor_custo = custo;
+                best_solution = solution;
+            }
+            //For better readability
+            System.out.println();
+        }
+
+        System.out.println("MBF: " + mbf/i);
+        System.out.println("Best solution found: ");
+        printSolution(best_solution);
+        System.out.println("Final cost: " + melhor_custo);
     }
 
     public int hill_climbing() {
@@ -121,13 +172,6 @@ public class Graph {
         } while (func.calculate_cost(solution, edgeList, vertices) == 0);
     }
 
-    public int[] getSolution() {
-        return solution;
-    }
-
-    public int getVertices() {
-        return vertices;
-    }
     public void printSolution(int[] solution) {
         System.out.print("-> ");
         for (int i = 0; i < vertices; i++) {

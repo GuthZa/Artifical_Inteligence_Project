@@ -53,7 +53,7 @@ public class func {
         } while (true);
     }
 
-    private static void repair(int[] solution, int[] copy, ArrayList<Edge> edgeList, int vertices) {
+    public static void repair(int[] solution, int[] copy, ArrayList<Edge> edgeList, int vertices) {
         Random random = new Random();
         int num_to_change;
         for (int i = 0; i < vertices; i++) {
@@ -69,6 +69,4 @@ public class func {
             }
         }
     }
-
-
 }
