@@ -7,7 +7,7 @@ public class Graph {
 
     private ArrayList<Edge> edgeList;
 
-    private static final int NUM_ITE = 10;
+    private static final int NUM_ITE = 1000;
 
     //p, edge, k
     private int vertices, k;
@@ -39,7 +39,7 @@ public class Graph {
             //Calculates the cost of the new neighbor
             neighborCost = func.calculate_cost(new_Solution, edgeList, vertices);
             //If the neighbor cost is lower than the initial cost, swap them (Minimization problem)
-            if (neighborCost != 0 && neighborCost < cost) {
+            if (neighborCost != 0 && neighborCost <= cost) {
                 this.solution = new_Solution;
                 cost = neighborCost;
             }

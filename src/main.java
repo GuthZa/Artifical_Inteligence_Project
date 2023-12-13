@@ -7,23 +7,16 @@ public class main {
     public static void main(String[] args) throws IOException {
 
         String file_name;
-        int runs, custo, melhor_custo = 0;
+        int runs = 10, custo, melhor_custo = 0;
         double mbf = 0.0;
 
         Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Runs: ");
-        runs = scanner.nextInt();
         System.out.println("File Name: ");
         file_name = scanner.next();
 
         File file = new File(file_name);
         if (!file.exists()) {
             System.out.println("Error opening the file");
-            return;
-        }
-        if (runs <=0) {
-            System.out.println("Num of runs needs to be higher than 0");
             return;
         }
 

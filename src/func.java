@@ -47,6 +47,7 @@ public class func {
             if (Arrays.equals(solution, copy)) {
                 return total;
             } else { //invalid solution, repair it
+//                return 0;
                 repair(solution, copy, edgeList, vertices);
             }
         } while (true);
@@ -54,13 +55,6 @@ public class func {
 
     private static void repair(int[] solution, int[] copy, ArrayList<Edge> edgeList, int vertices) {
         Random random = new Random();
-        /*
-        Escolher tantos pontos na solucao que estejam a 1 e na copia a 0
-        trocar na solucao para 0 e colocar um ponto aleatorio na solucao a 1 de modo a que verifique
-        edge.start == 1 && edge.end == 0 || edge.start == 0 && edge.end == 1
-
-        posso precorrer a array ou gerar valores aleatoreos com edgeList.get(random)
-         */
         int num_to_change;
         for (int i = 0; i < vertices; i++) {
             //Find the points where the copy was not evaluated
@@ -75,4 +69,6 @@ public class func {
             }
         }
     }
+
+
 }
