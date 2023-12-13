@@ -1,6 +1,6 @@
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.Scanner;
 
 public class Graph {
@@ -8,10 +8,11 @@ public class Graph {
     private ArrayList<Edge> edgeList;
 
     private static final int NUM_ITE = 1000;
+    private static final int POP_SIZE = 5;
 
     //p, edge, k
     private int vertices, k;
-    private int[] solution;
+    private final ArrayList<Solution> population = new ArrayList<>();
 
     public Graph() {
         run();
@@ -19,8 +20,9 @@ public class Graph {
 
     public void run() {
         String file_name;
-        int runs = 10, custo, melhor_custo = 0;
+        int runs = 10, best_cost = 0;
         double mbf = 0.0;
+        Solution best_global, best_local;
 
         Scanner scanner = new Scanner(System.in);
         System.out.println("File Name: ");
@@ -38,88 +40,55 @@ public class Graph {
             e.printStackTrace();
         }
 
+        //initialize the best global with a random solution
+        best_global = new Solution(k, vertices, edgeList);
 
         int i = 0;
-        int[] best_solution = new int[vertices];
-
         for (; i < runs; i++) {
             System.out.println("Initial: ");
-            create_Start_Solution();
-            printSolution(solution);
+            create_Starting_Population();
 
-            func.repair(solution, solution, edgeList, vertices);
+            func.repair(population, edgeList, vertices);
 
-            custo = hill_climbing();
+            hill_climbing(population);
             System.out.println("Rep: " + (i+1));
-            System.out.println("Final cost: " + custo);
-            printSolution(solution);
-            mbf += custo;
-            if (i == 0 || melhor_custo > custo) {
-                melhor_custo = custo;
-                best_solution = solution;
-            }
+            //Gets the best solution of the population
+            best_local = get_best(population);
+            System.out.println(best_local);
+            mbf += best_local.getCost();
+            //Saves the best cost of the whole run
+            if (i == 0 || best_cost < best_local.getCost())
+                best_global.swap(best_local);
             //For better readability
             System.out.println();
         }
 
         System.out.println("MBF: " + mbf/i);
         System.out.println("Best solution found: ");
-        printSolution(best_solution);
-        System.out.println("Final cost: " + melhor_custo);
+        System.out.println(best_global);
     }
 
-    public int hill_climbing() {
-        int cost, neighborCost;
-
-        //calculate the cost of the Initial Solution
-        cost = func.calculate_cost(solution, edgeList, vertices);
+    private void hill_climbing(ArrayList<Solution> population) {
         for (int i = 0; i < NUM_ITE; i++) {
-            //Create the neighbor
-            int[] new_Solution = create_Neighbors();
+            population.forEach(solution -> {
+                //Create the neighbor
+                Solution neighbor_Solution = new Solution(vertices, edgeList, solution.getSolution());
 
-            //Calculates the cost of the new neighbor
-            neighborCost = func.calculate_cost(new_Solution, edgeList, vertices);
+                //If the neighbor cost is lower than the initial cost, swap them (Minimization problem)
+                if (neighbor_Solution.getCost() != 0 && neighbor_Solution.getCost() < solution.getCost())
+                    solution.swap(neighbor_Solution);
 
-            //If the neighbor cost is lower than the initial cost, swap them (Minimization problem)
-            if (neighborCost != 0 && neighborCost < cost) {
-                this.solution = new_Solution;
-                cost = neighborCost;
-            }
+                //Generate a second neighbor
+                //Create the neighbor
+                neighbor_Solution = new Solution(vertices, edgeList, solution.getSolution());
 
-            //Generate a second neighbor
-            //Calculates the cost of the new neighbor
-            neighborCost = func.calculate_cost(new_Solution, edgeList, vertices);
-            //If the neighbor cost is lower than the initial cost, swap them (Minimization problem)
-            if (neighborCost != 0 && neighborCost <= cost) {
-                this.solution = new_Solution;
-                cost = neighborCost;
-            }
+                //If the neighbor cost is lower than the initial cost, swap them (Minimization problem)
+                if (neighbor_Solution.getCost() != 0 && neighbor_Solution.getCost() < solution.getCost())
+                    solution.swap(neighbor_Solution);
+            });
         }
-        return cost;
     }
-    private int[] create_Neighbors() {
-        int[] neighbor_Solution = new int[vertices];
-        Random random = new Random();
-        //copy everything from the solution into the neighbor_solution
-        if (vertices >= 0) System.arraycopy(solution, 0, neighbor_Solution, 0, vertices);
-        int p1, p2;
-        // Find positions with value 0
-        do {
-            p1 = random.nextInt(vertices - 1);
-        } while (neighbor_Solution[p1] != 0);
-        //find positions with value 1
-        do {
-            p2 = random.nextInt(vertices - 1);
-        } while (neighbor_Solution[p2] != 1);
-
-        //Switch
-        neighbor_Solution[p1] = 1;
-        neighbor_Solution[p2] = 0;
-
-        return neighbor_Solution;
-    }
-
-    public void fillData(File file) throws IOException {
+    private void fillData(File file) throws IOException {
         Scanner scanner = new Scanner(file);
 
         //check if the file is correct
@@ -141,8 +110,6 @@ public class Graph {
         //no use for this value, just saves the number of points in the graph
         scanner.next(); //edge
 
-        this.solution = new int[vertices];
-
         int start, end, cost;
 
         while (scanner.hasNextLine()) {
@@ -156,27 +123,19 @@ public class Graph {
         }
     }
 
-    public void create_Start_Solution() {
-        Random random = new Random();
-        int position;
-        do {
-            for (int i = 0; i < vertices; i++) {
-                solution[i] = 0;
-            }
-            for (int i = 0; i < k; i++) {
-                do {
-                    position = random.nextInt(vertices);
-                } while (solution[position] != 0);
-                solution[position] = 1;
-            }
-        } while (func.calculate_cost(solution, edgeList, vertices) == 0);
+    private void create_Starting_Population() {
+        //When starting each solution, it already calculates the cost and makes sure none are invalid solutions;
+        for (int j = 0; j < POP_SIZE; j++) {
+            population.add(new Solution(k, vertices, edgeList));
+        }
     }
 
-    public void printSolution(int[] solution) {
-        System.out.print("-> ");
-        for (int i = 0; i < vertices; i++) {
-            System.out.print(solution[i]);
-        }
-        System.out.println();
+    public Solution get_best(ArrayList<Solution> population) {
+        Solution best_solution = population.get(0);
+        population.forEach(solution -> {
+            if(solution.getCost() < best_solution.getCost())
+                best_solution.swap(solution);
+        });
+        return best_solution;
     }
 }
