@@ -48,4 +48,24 @@ public class func {
                 filter(solution -> !Arrays.equals(solution.getSolution(), solution.getCopy())).
                 forEach(solution -> solution.repair(vertices, edgeList));
     }
+
+    public static ArrayList<Solution> tournament(ArrayList<Solution> population) {
+
+        ArrayList<Solution> parents = new ArrayList<>();
+
+
+        //gets the best 2 solutions to be parents
+        Solution best = population.get(0), second = population.get(1);
+        population.forEach(solution -> {
+            if (solution.getCost() < best.getCost())
+                best.swap_solution(solution);
+            if (solution.getCost() < second.getCost())
+                second.swap_solution(solution);
+        });
+
+        parents.add(best);
+        parents.add(second);
+
+        return parents;
+    }
 }

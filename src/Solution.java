@@ -62,27 +62,29 @@ public class Solution {
         this.cost = func.calculate_cost(this, edgeList);
     }
 
-    private void swap_numbers(int vertices) {
+    private void change_random_number_to_zero(int vertices) {
         Random random = new Random();
         int num_to_change;
         //Get a random other point that is at 0
         do {
             num_to_change = random.nextInt(vertices);
         } while (solution[num_to_change] != 0);
+        solution[num_to_change] = 0;
     }
 
     public void repair(int vertices, ArrayList<Edge> edgeList) {
         do {
             for (int i = 0; i < solution.length; i++) {
                 if (solution[i] == 1 && copy[i] == 0) {
-                    swap_numbers(vertices);
+                    change_random_number_to_zero(vertices);
+                    solution[i] = 0;
                 }
             }
             this.cost = func.calculate_cost(this, edgeList);
         } while (cost == 0);
     }
 
-    public void swap(Solution solution) {
+    public void swap_solution(Solution solution) {
         this.solution = solution.getSolution();
         this.cost = solution.getCost();
         this.copy = solution.getCopy();

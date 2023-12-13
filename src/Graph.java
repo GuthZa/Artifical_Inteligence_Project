@@ -13,6 +13,8 @@ public class Graph {
     //p, edge, k
     private int vertices, k;
     private final ArrayList<Solution> population = new ArrayList<>();
+    private final ArrayList<Solution> parents = new ArrayList<>();
+    private final ArrayList<Solution> offsprings = new ArrayList<>();
 
     public Graph() {
         run();
@@ -58,7 +60,7 @@ public class Graph {
             mbf += best_local.getCost();
             //Saves the best cost of the whole run
             if (i == 0 || best_cost < best_local.getCost())
-                best_global.swap(best_local);
+                best_global.swap_solution(best_local);
             //For better readability
             System.out.println();
         }
@@ -76,7 +78,7 @@ public class Graph {
 
                 //If the neighbor cost is lower than the initial cost, swap them (Minimization problem)
                 if (neighbor_Solution.getCost() != 0 && neighbor_Solution.getCost() < solution.getCost())
-                    solution.swap(neighbor_Solution);
+                    solution.swap_solution(neighbor_Solution);
 
                 //Generate a second neighbor
                 //Create the neighbor
@@ -84,7 +86,7 @@ public class Graph {
 
                 //If the neighbor cost is lower than the initial cost, swap them (Minimization problem)
                 if (neighbor_Solution.getCost() != 0 && neighbor_Solution.getCost() < solution.getCost())
-                    solution.swap(neighbor_Solution);
+                    solution.swap_solution(neighbor_Solution);
             });
         }
     }
@@ -134,7 +136,7 @@ public class Graph {
         Solution best_solution = population.get(0);
         population.forEach(solution -> {
             if(solution.getCost() < best_solution.getCost())
-                best_solution.swap(solution);
+                best_solution.swap_solution(solution);
         });
         return best_solution;
     }
