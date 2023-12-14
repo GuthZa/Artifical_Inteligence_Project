@@ -8,13 +8,12 @@ public class Graph {
     private ArrayList<Edge> edgeList;
 
     private static final int NUM_ITE = 1000;
-    private static final int POP_SIZE = 5;
+    private static final int POP_SIZE = 10; //Must keep pairs, bc of parents
+    private static final float REPAIR_CHANCE = 0.2F;
 
     //p, edge, k
     private int vertices, k;
     private final ArrayList<Solution> population = new ArrayList<>();
-    private final ArrayList<Solution> parents = new ArrayList<>();
-    private final ArrayList<Solution> offsprings = new ArrayList<>();
 
     public Graph() {
         run();
@@ -45,12 +44,17 @@ public class Graph {
         //initialize the best global with a random solution
         best_global = new Solution(k, vertices, edgeList);
 
+        ArrayList<Solution> parents = new ArrayList<>();
+
         int i = 0;
         for (; i < runs; i++) {
             System.out.println("Initial: ");
             create_Starting_Population();
 
-            func.repair(population, edgeList, vertices);
+            func.repair(population, edgeList, vertices, REPAIR_CHANCE);
+
+            parents = func.tournament(population);
+
 
             hill_climbing(population);
             System.out.println("Rep: " + (i+1));
@@ -124,14 +128,12 @@ public class Graph {
             edgeList.add(new Edge(start, end, cost));
         }
     }
-
     private void create_Starting_Population() {
         //When starting each solution, it already calculates the cost and makes sure none are invalid solutions;
         for (int j = 0; j < POP_SIZE; j++) {
             population.add(new Solution(k, vertices, edgeList));
         }
     }
-
     public Solution get_best(ArrayList<Solution> population) {
         Solution best_solution = population.get(0);
         population.forEach(solution -> {

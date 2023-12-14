@@ -1,8 +1,10 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 public class func {
 
+    static Random random = new Random();
     private func() {
     }
 
@@ -43,23 +45,31 @@ public class func {
         return Arrays.equals(solution.getSolution(), solution.getCopy()) ? cost : 0;
     }
 
-    public static void repair(ArrayList<Solution> population, ArrayList<Edge> edgeList , int vertices) {
+    public static void repair(ArrayList<Solution> population, ArrayList<Edge> edgeList , int vertices, float repair_chance) {
+        //Repair only invalid solutions
         population.stream().
                 filter(solution -> !Arrays.equals(solution.getSolution(), solution.getCopy())).
-                forEach(solution -> solution.repair(vertices, edgeList));
+                forEach(solution -> {
+                    if (random.nextFloat() < repair_chance)
+                        solution.repair(vertices, edgeList);
+                });
     }
 
     public static ArrayList<Solution> tournament(ArrayList<Solution> population) {
 
         ArrayList<Solution> parents = new ArrayList<>();
 
-
         //gets the best 2 solutions to be parents
         Solution best = population.get(0), second = population.get(1);
+        //Iterate the population
         population.forEach(solution -> {
-            if (solution.getCost() < best.getCost())
+            //get the best solution
+            if (solution.getCost() < best.getCost()) {
+                second.swap_solution(best);
                 best.swap_solution(solution);
-            if (solution.getCost() < second.getCost())
+            }
+            //gets the second-best solution
+            else if (solution.getCost() < second.getCost() && solution != best)
                 second.swap_solution(solution);
         });
 
@@ -67,5 +77,94 @@ public class func {
         parents.add(second);
 
         return parents;
+    }
+
+    public static ArrayList<Solution> genetic_operators(ArrayList<Solution> parents, ArrayList<Solution> population, float combine_chance, float mutation_chance) {
+
+        crossover(parents, population, combine_chance);
+
+
+
+        if (Math.random() < 0.5)
+            recombine(parents, population, combine_chance);
+        else
+            uniform_recombine(parents, population, combine_chance);
+
+        //TODO depois dos genetic operators, as solucoes podem ter mais ou menos pontos do que os que devia
+
+        return population;
+    }
+    
+    public static void crossover(ArrayList<Solution> parents, ArrayList<Solution> population, float combine_chance) {
+        for (int i = 0; i < population.size(); i+=2) {
+            if (random.nextFloat() < combine_chance) {
+                int point = random.nextInt(population.get(0).getSolution().length - 1);
+
+                //From the beginning until the point
+                population.get(i).recombine_solution(0, point, parents.get(i));
+                population.get(i + 1).recombine_solution(0, point, parents.get(i + 1));
+
+                //From the point until the end
+                population.get(i).recombine_solution(point, parents.get(i).getSolution().length, population.get(i + 1));
+                population.get(i + 1).recombine_solution(point, parents.get(i).getSolution().length, population.get(i));
+            }
+            else {
+                population.get(i).swap_solution(parents.get(i));
+                population.get(i + 1).swap_solution(parents.get(i + 1));
+            }
+        }
+    }
+
+    public static void recombine(ArrayList<Solution> parents, ArrayList<Solution> population, float combine_chance) {
+        for (int i = 0; i < population.size(); i+=2) {
+            if (random.nextFloat() < combine_chance) {
+                int point_two, point_one;
+                //Initialize the points
+                point_one = random.nextInt(population.get(0).getSolution().length);
+                do {
+                    point_two = random.nextInt(population.get(0).getSolution().length);
+                } while (point_two == point_one);
+
+                //Guarantees the point one is smaller than the point twp
+                if (point_one > point_two) {
+                    int dummy = point_one;
+                    point_one = point_two;
+                    point_two = dummy;
+                }
+
+                //Initialize the offspring
+                population.get(i).swap_solution(parents.get(i));
+                population.get(i + 1).swap_solution(parents.get(i + 1));
+
+                //From the beginning until the point
+                population.get(i).recombine_solution(point_one, point_two, parents.get(i + 1));
+                population.get(i + 1).recombine_solution(point_one, point_two, parents.get(i));
+
+            }
+            else {
+                population.get(i).swap_solution(parents.get(i));
+                population.get(i + 1).swap_solution(parents.get(i + 1));
+            }
+        }
+    }
+    
+    public static void uniform_recombine(ArrayList<Solution> parents, ArrayList<Solution> population, float combine_chance) {
+        for (int i = 0; i < population.size(); i+=2) {
+            //Initialize the offspring
+            population.get(i).swap_solution(parents.get(i));
+            population.get(i + 1).swap_solution(parents.get(i + 1));
+
+            for (int j = 0; j < population.get(i).getSolution().length; j++) {
+                //There's a chance to swap the positions of the
+                if(random.nextFloat() < combine_chance) {
+                    population.get(i).getSolution()[j] = parents.get(i + 1).getSolution()[j];
+                    population.get(i + 1).getSolution()[j] = parents.get(i).getSolution()[j];
+                }
+            }
+        }
+    }
+
+    public static void mutation(ArrayList<Solution> parents, ArrayList<Solution> population, float mutation_chance) {
+
     }
 }

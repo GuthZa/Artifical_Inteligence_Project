@@ -84,6 +84,15 @@ public class Solution {
         } while (cost == 0);
     }
 
+    public void recombine_solution(int start, int end, Solution solution) {
+        for (int i = 0; i < start; i++) {
+            this.solution[i] = solution.getSolution()[i];
+        }
+        for (int i = start; i < end; i++) {
+            this.solution[i] = solution.getSolution()[i];
+        }
+    }
+
     public void swap_solution(Solution solution) {
         this.solution = solution.getSolution();
         this.cost = solution.getCost();
