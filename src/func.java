@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 public class func {
 
@@ -64,10 +65,11 @@ public class func {
             do {
                 x2 = random.nextInt(population.size());
             } while (x1 == x2);
+
             if(population.get(x1).getCost() < population.get(x2).getCost())
-                parents.get(i).swap_solution(population.get(x1));
+                parents.get(i).set_solution(population.get(x1));
             else
-                parents.get(i).swap_solution(population.get(x2));
+                parents.get(i).set_solution(population.get(x2));
         }
         return parents;
     }
@@ -103,7 +105,7 @@ public class func {
                     this_cost = population.get(new_x).getCost();
 
                     if (this_cost < best_cost) {
-                        parents.get(i).swap_solution(population.get(new_x));
+                        parents.get(i).set_solution(population.get(new_x));
                         best_cost = this_cost;
                     }
                     counter++;
@@ -113,32 +115,32 @@ public class func {
         return parents;
     }
 
-    public static void genetic_operators(ArrayList<Solution> parents, ArrayList<Solution> population, float combine_chance, float mutation_chance) {
+    public static void genetic_operators(ArrayList<Solution> parents, ArrayList<Solution> offspring, float combine_chance, float mutation_chance) {
 
-        one_point_split(parents, population, combine_chance);
-        two_point_split(parents, population, combine_chance);
-        uniform_recombine(parents, population, combine_chance);
-        mutation(population, mutation_chance);
+        one_point_split(parents, offspring, combine_chance);
+        two_point_split(parents, offspring, combine_chance);
+        uniform_recombine(parents, offspring, combine_chance);
+        mutation(offspring, mutation_chance);
 
     }
     
     //One point separation
-    public static void one_point_split(ArrayList<Solution> parents, ArrayList<Solution> population, float combine_chance) {
+    public static void one_point_split(ArrayList<Solution> parents, ArrayList<Solution> offspring, float combine_chance) {
         for (int i = 0; i < parents.size(); i+=2) {
             if (random.nextFloat() < combine_chance) {
-                int point = random.nextInt(population.get(0).getSolution().length);
+                int point = random.nextInt(offspring.get(0).getSolution().length);
 
                 //From the beginning until the point
-                population.get(i).recombine_solution(0, point, parents.get(i));
-                population.get(i + 1).recombine_solution(0, point, parents.get(i + 1));
+                offspring.get(i).recombine_solution(0, point, parents.get(i));
+                offspring.get(i + 1).recombine_solution(0, point, parents.get(i + 1));
 
                 //From the point until the end
-                population.get(i).recombine_solution(point, parents.get(i).getSolution().length, population.get(i + 1));
-                population.get(i + 1).recombine_solution(point, parents.get(i).getSolution().length, population.get(i));
+                offspring.get(i).recombine_solution(point, parents.get(i).getSolution().length, offspring.get(i + 1));
+                offspring.get(i + 1).recombine_solution(point, parents.get(i).getSolution().length, offspring.get(i));
             }
             else {
-                population.get(i).swap_solution(parents.get(i));
-                population.get(i + 1).swap_solution(parents.get(i + 1));
+                offspring.get(i).set_solution(parents.get(i));
+                offspring.get(i + 1).set_solution(parents.get(i + 1));
             }
         }
     }
@@ -161,8 +163,8 @@ public class func {
                 }
 
                 //Initialize the offspring
-                population.get(i).swap_solution(parents.get(i));
-                population.get(i + 1).swap_solution(parents.get(i + 1));
+                population.get(i).set_solution(parents.get(i));
+                population.get(i + 1).set_solution(parents.get(i + 1));
 
                 //From the beginning until the point
                 population.get(i).recombine_solution(point_one, point_two, parents.get(i + 1));
@@ -170,8 +172,8 @@ public class func {
 
             }
             else {
-                population.get(i).swap_solution(parents.get(i));
-                population.get(i + 1).swap_solution(parents.get(i + 1));
+                population.get(i).set_solution(parents.get(i));
+                population.get(i + 1).set_solution(parents.get(i + 1));
             }
         }
     }
@@ -179,8 +181,8 @@ public class func {
     public static void uniform_recombine(ArrayList<Solution> parents, ArrayList<Solution> population, float combine_chance) {
         for (int i = 0; i < parents.size(); i+=2) {
             //Initialize the offspring
-            population.get(i).swap_solution(parents.get(i));
-            population.get(i + 1).swap_solution(parents.get(i + 1));
+            population.get(i).set_solution(parents.get(i));
+            population.get(i + 1).set_solution(parents.get(i + 1));
 
             for (int j = 0; j < population.get(i).getSolution().length; j++) {
                 //There's a chance to swap the positions of the
@@ -204,9 +206,4 @@ public class func {
             }
         });
     }
-
-    public static void check_valid_solution(ArrayList<Solution> population, int k) {
-        population.forEach(solution -> solution.repair_solution(k));
-    }
-
 }

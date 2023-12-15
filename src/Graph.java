@@ -11,10 +11,11 @@ public class Graph {
     private static final int POP_SIZE = 10; //Must keep pairs, bc of parents
     private static final float REPAIR_CHANCE = 0.2F;
     private static final float COMBINE_CHANCE = 0.5F;
+    private static final int tournament_size = 5;
 
     //p, edge, k
     private int vertices, k;
-    private final ArrayList<Solution> population = new ArrayList<>();
+    private ArrayList<Solution> population;
 
     public Graph() {
         run();
@@ -58,15 +59,18 @@ public class Graph {
             //Genetic operator, each with its own chance
             func.genetic_operators(parents, population, COMBINE_CHANCE, REPAIR_CHANCE);
 
+            System.out.println("Population:");
+            population.forEach(System.out::println);
+
             //Applies hill climbing to the solution, trying to find a smaller cost solution
-            hill_climbing(population);
+            hill_climbing();
 
             //Check if the solutions are valid
             //They must have k 1s
-            func.check_valid_solution(population, k);
+//            func.check_valid_solution(population, k);
             //Checks if they are valid solutions
             //They must not have cost = 0
-            func.repair(population, k, edgeList);
+//            func.repair(population, k, edgeList);
 
             System.out.println("Rep: " + (i+1));
             //Gets the best solution of the population
@@ -75,7 +79,7 @@ public class Graph {
             mbf += best_local.getCost();
             //Saves the best cost of the whole run
             if (i == 0 || best_cost < best_local.getCost())
-                best_global.swap_solution(best_local);
+                best_global.set_solution(best_local);
             //For better readability
             System.out.println();
         }
@@ -85,23 +89,25 @@ public class Graph {
         System.out.println(best_global);
     }
 
-    private void hill_climbing(ArrayList<Solution> population) {
+    private void hill_climbing() {
         for (int i = 0; i < NUM_ITE; i++) {
             population.forEach(solution -> {
                 //Create the neighbor
-                Solution neighbor_Solution = new Solution(vertices, edgeList, solution.getSolution());
+                Solution neighbor_Solution = new Solution(vertices);
+
+                neighbor_Solution.set_solution(solution);
 
                 //If the neighbor cost is lower than the initial cost, swap them (Minimization problem)
                 if (neighbor_Solution.getCost() != 0 && neighbor_Solution.getCost() < solution.getCost())
-                    solution.swap_solution(neighbor_Solution);
+                    solution.set_solution(neighbor_Solution);
 
                 //Generate a second neighbor
                 //Create the neighbor
-                neighbor_Solution = new Solution(vertices, edgeList, solution.getSolution());
+                neighbor_Solution = new Solution(vertices);
 
                 //If the neighbor cost is lower than the initial cost, swap them (Minimization problem)
                 if (neighbor_Solution.getCost() != 0 && neighbor_Solution.getCost() < solution.getCost())
-                    solution.swap_solution(neighbor_Solution);
+                    solution.set_solution(neighbor_Solution);
             });
         }
     }
@@ -140,6 +146,7 @@ public class Graph {
         }
     }
     private void create_Starting_Population() {
+        population = new ArrayList<>();
         //When starting each solution, it already calculates the cost and makes sure none are invalid solutions;
         for (int j = 0; j < POP_SIZE; j++) {
             population.add(new Solution(k, vertices, edgeList));
@@ -149,7 +156,7 @@ public class Graph {
         Solution best_solution = population.get(0);
         population.forEach(solution -> {
             if(solution.getCost() < best_solution.getCost())
-                best_solution.swap_solution(solution);
+                best_solution.set_solution(solution);
         });
         return best_solution;
     }

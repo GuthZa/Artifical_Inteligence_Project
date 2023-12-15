@@ -6,25 +6,23 @@ public class Solution {
     private int[] solution;
     private int[] copy; //array that saves the points that were analysed for cost
     private int cost;
+    private Random random = new Random();
     public Solution(int k, int vertices, ArrayList<Edge> edgeList) {
         solution = new int[vertices];
         copy = new int[vertices];
         init_Solution(k, vertices, edgeList);
     }
 
-    public Solution(int vertices, ArrayList<Edge> edgeList, int[] solution) {
-        copy = new int[vertices];
-        init_Neighbor(vertices, edgeList, solution);
-    }
-
+    //adds an empty solution, for parents
     public Solution(int vertices) {
         solution = new int[vertices];
         copy = new int[vertices];
+        Arrays.fill(solution, 0);
+        Arrays.fill(copy, 0);
         cost = 0;
     }
 
     public void init_Solution(int k, int vertices, ArrayList<Edge> edgeList) {
-        Random random = new Random();
         int position;
         do {
             Arrays.fill(solution,0);
@@ -33,40 +31,33 @@ public class Solution {
                 //Adds points up to the number predefined in the file as k
                 do {
                     position = random.nextInt(vertices);
-                } while (solution[position] != 0);
+                } while (solution[position] == 1);
                 solution[position] = 1;
             }
-            //this creates new solutions until they are valid
             this.cost = func.calculate_cost(this, edgeList);
+            //this creates new solutions until they are valid
         } while (cost == 0);
     }
 
     public void init_Neighbor(int vertices, ArrayList<Edge> edgeList, int[] solution) {
-        int[] neighbor_Solution = new int[vertices];
-        Random random = new Random();
-        //copy everything from the solution into the neighbor_solution
-        System.arraycopy(solution, 0, neighbor_Solution, 0, vertices);
         int p1, p2;
         // Find positions with value 0
         do {
             p1 = random.nextInt(vertices);
-        } while (neighbor_Solution[p1] == 1);
+        } while (solution[p1] == 1);
         //find positions with value 1
         do {
             p2 = random.nextInt(vertices);
-        } while (neighbor_Solution[p2] == 0);
+        } while (solution[p2] == 0);
 
         //Switch
-        neighbor_Solution[p1] = 1;
-        neighbor_Solution[p2] = 0;
-
-        this.solution = neighbor_Solution;
+        solution[p1] = 1;
+        solution[p2] = 0;
 
         this.cost = func.calculate_cost(this, edgeList);
     }
 
     private void change_random_point_to_zero() {
-        Random random = new Random();
         int num_to_change;
         //Get a random point that is at 0
         do {
@@ -76,7 +67,6 @@ public class Solution {
     }
 
     private void change_random_point_to_one() {
-        Random random = new Random();
         int num_to_change;
         //Get a random point that is at 1
         do {
@@ -139,6 +129,7 @@ public class Solution {
 
     public void resetCopy() {
         Arrays.fill(copy, 0);
+        cost = 0;
     }
 
     public int getCost() {
@@ -146,9 +137,9 @@ public class Solution {
     }
 
     //Setters
-    public void swap_solution(Solution solution) {
-        this.solution = solution.getSolution();
-        this.cost = solution.getCost();
+    public void set_solution(Solution solution) {
+        System.arraycopy(solution.getSolution(), 0, this.solution, 0, solution.getSolution().length);
+        System.arraycopy(solution.getCopy(), 0, this.copy, 0, solution.getSolution().length);
         this.copy = solution.getCopy();
     }
 
