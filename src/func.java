@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class func {
 
@@ -42,10 +41,9 @@ public class func {
     }
 
     public static void repair(ArrayList<Solution> population, int k, ArrayList<Edge> edgeList) {
-        //Repair only invalid solutions
         population.forEach(solution -> {
-            solution.repair_invalid_solution(edgeList);
             solution.repair_solution(k);
+            solution.repair_invalid_solution(edgeList);
         });
     }
 
@@ -77,6 +75,7 @@ public class func {
     //Tournament variable size
     public static ArrayList<Solution> bigger_tournament(ArrayList<Solution> population, int tournament_size) {
 
+        //TODO: check if this tournament is getting the best solutions more often
         ArrayList<Solution> parents = new ArrayList<>();
         //Creates a parents array the same size as population
         for (int i = 0; i < population.size(); i++) {
@@ -205,5 +204,27 @@ public class func {
                 }
             }
         });
+    }
+
+    public static void hill_climbing(int NUM_ITE, ArrayList<Solution> population, ArrayList<Edge> edgeList) {
+        for (int i = 0; i < NUM_ITE; i++) {
+            population.forEach(solution -> {
+                //Create the neighbor
+                Solution neighbor_Solution = new Solution(population.get(0).getSolution().length);
+                neighbor_Solution.init_Neighbor(edgeList, solution);
+
+                //If the neighbor cost is lower than the initial cost, swap them (Minimization problem)
+                if (neighbor_Solution.getCost() != 0 && neighbor_Solution.getCost() < solution.getCost())
+                    solution.set_solution(neighbor_Solution);
+
+                //Generate a second neighbor
+                //Create the neighbor
+                neighbor_Solution.init_Neighbor(edgeList, solution);
+
+                //If the neighbor cost is lower than the initial cost, swap them (Minimization problem)
+                if (neighbor_Solution.getCost() != 0 && neighbor_Solution.getCost() < solution.getCost())
+                    solution.set_solution(neighbor_Solution);
+            });
+        }
     }
 }

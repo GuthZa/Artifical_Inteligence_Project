@@ -13,7 +13,7 @@ public class Graph {
     private static final float COMBINE_CHANCE = 0.5F;
     private static final int tournament_size = 5;
 
-    //p, edge, k
+    //edge, k
     private int vertices, k;
     private ArrayList<Solution> population;
 
@@ -56,21 +56,26 @@ public class Graph {
             //Generates the parents to use for genetic modifications
             parents = func.tournament(population);
 
+            System.out.println("Population:");
+            population.forEach(System.out::println);
+
             //Genetic operator, each with its own chance
             func.genetic_operators(parents, population, COMBINE_CHANCE, REPAIR_CHANCE);
 
             System.out.println("Population:");
             population.forEach(System.out::println);
 
-            //Applies hill climbing to the solution, trying to find a smaller cost solution
-            hill_climbing();
-
             //Check if the solutions are valid
-            //They must have k 1s
-//            func.check_valid_solution(population, k);
-            //Checks if they are valid solutions
-            //They must not have cost = 0
-//            func.repair(population, k, edgeList);
+            //They MUST have k number of 1s
+            //They MUST NOT have cost = 0
+            func.repair(population, k, edgeList);
+
+            //Applies hill climbing to the solution, trying to find a smaller cost solution
+            //The neighbor checks the cost
+            //The hill climbing discards any solution that has cost == 0
+            func.hill_climbing(NUM_ITE, population, edgeList);
+
+
 
             System.out.println("Rep: " + (i+1));
             //Gets the best solution of the population
@@ -87,29 +92,6 @@ public class Graph {
         System.out.println("MBF: " + mbf/i);
         System.out.println("Best solution found: ");
         System.out.println(best_global);
-    }
-
-    private void hill_climbing() {
-        for (int i = 0; i < NUM_ITE; i++) {
-            population.forEach(solution -> {
-                //Create the neighbor
-                Solution neighbor_Solution = new Solution(vertices);
-
-                neighbor_Solution.set_solution(solution);
-
-                //If the neighbor cost is lower than the initial cost, swap them (Minimization problem)
-                if (neighbor_Solution.getCost() != 0 && neighbor_Solution.getCost() < solution.getCost())
-                    solution.set_solution(neighbor_Solution);
-
-                //Generate a second neighbor
-                //Create the neighbor
-                neighbor_Solution = new Solution(vertices);
-
-                //If the neighbor cost is lower than the initial cost, swap them (Minimization problem)
-                if (neighbor_Solution.getCost() != 0 && neighbor_Solution.getCost() < solution.getCost())
-                    solution.set_solution(neighbor_Solution);
-            });
-        }
     }
     private void fillData(File file) throws IOException {
         Scanner scanner = new Scanner(file);
