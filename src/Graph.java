@@ -10,6 +10,7 @@ public class Graph {
     private static final int NUM_ITE = 1000;
     private static final int POP_SIZE = 10; //Must keep pairs, bc of parents
     private static final float REPAIR_CHANCE = 0.2F;
+    private static final float COMBINE_CHANCE = 0.5F;
 
     //p, edge, k
     private int vertices, k;
@@ -51,11 +52,20 @@ public class Graph {
             System.out.println("Initial: ");
             create_Starting_Population();
 
-            func.repair(population, edgeList, vertices, REPAIR_CHANCE);
-
+            //Generates the parents to use for genetic modifications
             parents = func.tournament(population);
 
+            //Genetic operator, each with its own chance
+            func.genetic_operators(parents, population, COMBINE_CHANCE, REPAIR_CHANCE);
 
+            //Check if the solutions are valid
+            //They must have k 1s
+            func.check_valid_solution(population, k);
+            //Checks if they are valid solutions
+            //They must not have cost = 0
+            func.repair(population, edgeList);
+
+            //Applies hill climbing to the solution, trying to find a smaller cost solution
             hill_climbing(population);
             System.out.println("Rep: " + (i+1));
             //Gets the best solution of the population

@@ -62,26 +62,49 @@ public class Solution {
         this.cost = func.calculate_cost(this, edgeList);
     }
 
-    private void change_random_number_to_zero(int vertices) {
+    private void change_random_point_to_zero() {
         Random random = new Random();
         int num_to_change;
-        //Get a random other point that is at 0
+        //Get a random point that is at 0
         do {
-            num_to_change = random.nextInt(vertices);
+            num_to_change = random.nextInt(solution.length);
         } while (solution[num_to_change] != 0);
         solution[num_to_change] = 0;
     }
 
-    public void repair(int vertices, ArrayList<Edge> edgeList) {
+    private void change_random_point_to_one() {
+        Random random = new Random();
+        int num_to_change;
+        //Get a random point that is at 1
+        do {
+            num_to_change = random.nextInt(solution.length);
+        } while (solution[num_to_change] != 1);
+        solution[num_to_change] = 1;
+    }
+
+    public void repair_invalid_solution(ArrayList<Edge> edgeList) {
         do {
             for (int i = 0; i < solution.length; i++) {
                 if (solution[i] == 1 && copy[i] == 0) {
-                    change_random_number_to_zero(vertices);
+                    change_random_point_to_zero();
                     solution[i] = 0;
                 }
             }
             this.cost = func.calculate_cost(this, edgeList);
         } while (cost == 0);
+    }
+
+    public void repair_solution(int k) {
+        int count = count_points();
+        do {
+            //If the number of 1s is smaller than k, add 1s random
+            if (count > k)
+                change_random_point_to_zero();
+            //If the number of 1s is higher than k, remove 1s random
+            if (count < k)
+                change_random_point_to_one();
+            count = count_points();
+        } while (count != k);
     }
 
     public void recombine_solution(int start, int end, Solution solution) {
@@ -97,6 +120,13 @@ public class Solution {
         this.solution = solution.getSolution();
         this.cost = solution.getCost();
         this.copy = solution.getCopy();
+    }
+
+    public int count_points() {
+        int k = 0;
+        for (int j : solution)
+            if (j == 1) k++;
+        return k;
     }
 
     public int[] getSolution() {

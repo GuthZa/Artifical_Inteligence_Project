@@ -45,14 +45,11 @@ public class func {
         return Arrays.equals(solution.getSolution(), solution.getCopy()) ? cost : 0;
     }
 
-    public static void repair(ArrayList<Solution> population, ArrayList<Edge> edgeList , int vertices, float repair_chance) {
+    public static void repair(ArrayList<Solution> population, ArrayList<Edge> edgeList) {
         //Repair only invalid solutions
         population.stream().
                 filter(solution -> !Arrays.equals(solution.getSolution(), solution.getCopy())).
-                forEach(solution -> {
-                    if (random.nextFloat() < repair_chance)
-                        solution.repair(vertices, edgeList);
-                });
+                forEach(solution -> solution.repair_invalid_solution(edgeList));
     }
 
     public static ArrayList<Solution> tournament(ArrayList<Solution> population) {
@@ -79,23 +76,17 @@ public class func {
         return parents;
     }
 
-    public static ArrayList<Solution> genetic_operators(ArrayList<Solution> parents, ArrayList<Solution> population, float combine_chance, float mutation_chance) {
+    public static void genetic_operators(ArrayList<Solution> parents, ArrayList<Solution> population, float combine_chance, float mutation_chance) {
 
-        crossover(parents, population, combine_chance);
+        one_point_split(parents, population, combine_chance);
+        two_point_split(parents, population, combine_chance);
+        uniform_recombine(parents, population, combine_chance);
+        mutation(population, mutation_chance);
 
-
-
-        if (Math.random() < 0.5)
-            recombine(parents, population, combine_chance);
-        else
-            uniform_recombine(parents, population, combine_chance);
-
-        //TODO depois dos genetic operators, as solucoes podem ter mais ou menos pontos do que os que devia
-
-        return population;
     }
     
-    public static void crossover(ArrayList<Solution> parents, ArrayList<Solution> population, float combine_chance) {
+    //One point separation
+    public static void one_point_split(ArrayList<Solution> parents, ArrayList<Solution> population, float combine_chance) {
         for (int i = 0; i < population.size(); i+=2) {
             if (random.nextFloat() < combine_chance) {
                 int point = random.nextInt(population.get(0).getSolution().length - 1);
@@ -114,8 +105,8 @@ public class func {
             }
         }
     }
-
-    public static void recombine(ArrayList<Solution> parents, ArrayList<Solution> population, float combine_chance) {
+    
+    public static void two_point_split(ArrayList<Solution> parents, ArrayList<Solution> population, float combine_chance) {
         for (int i = 0; i < population.size(); i+=2) {
             if (random.nextFloat() < combine_chance) {
                 int point_two, point_one;
@@ -164,7 +155,21 @@ public class func {
         }
     }
 
-    public static void mutation(ArrayList<Solution> parents, ArrayList<Solution> population, float mutation_chance) {
-
+    public static void mutation(ArrayList<Solution> population, float mutation_chance) {
+        population.forEach(solution -> {
+            for (int i = 0; i < solution.getSolution().length; i++) {
+                if (random.nextFloat() < mutation_chance) {
+                    if (solution.getSolution()[i] == 0)
+                        solution.getSolution()[i] = 1;
+                    else
+                        solution.getSolution()[i] = 0;
+                }
+            }
+        });
     }
+
+    public static void check_valid_solution(ArrayList<Solution> population, int k) {
+        population.forEach(solution -> solution.repair_solution(k));
+    }
+
 }
