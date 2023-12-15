@@ -17,15 +17,18 @@ public class Solution {
         init_Neighbor(vertices, edgeList, solution);
     }
 
+    public Solution(int vertices) {
+        solution = new int[vertices];
+        copy = new int[vertices];
+        cost = 0;
+    }
+
     public void init_Solution(int k, int vertices, ArrayList<Edge> edgeList) {
         Random random = new Random();
         int position;
         do {
-            for (int i = 0; i < vertices; i++) {
-                //initialize the arrays
-                solution[i] = 0;
-                copy[i] = 0;
-            }
+            Arrays.fill(solution,0);
+            Arrays.fill(copy,0);
             for (int i = 0; i < k; i++) {
                 //Adds points up to the number predefined in the file as k
                 do {
@@ -46,12 +49,12 @@ public class Solution {
         int p1, p2;
         // Find positions with value 0
         do {
-            p1 = random.nextInt(vertices - 1);
-        } while (neighbor_Solution[p1] != 0);
+            p1 = random.nextInt(vertices);
+        } while (neighbor_Solution[p1] == 1);
         //find positions with value 1
         do {
-            p2 = random.nextInt(vertices - 1);
-        } while (neighbor_Solution[p2] != 1);
+            p2 = random.nextInt(vertices);
+        } while (neighbor_Solution[p2] == 0);
 
         //Switch
         neighbor_Solution[p1] = 1;
@@ -68,7 +71,7 @@ public class Solution {
         //Get a random point that is at 0
         do {
             num_to_change = random.nextInt(solution.length);
-        } while (solution[num_to_change] != 0);
+        } while (solution[num_to_change] == 0);
         solution[num_to_change] = 0;
     }
 
@@ -78,7 +81,7 @@ public class Solution {
         //Get a random point that is at 1
         do {
             num_to_change = random.nextInt(solution.length);
-        } while (solution[num_to_change] != 1);
+        } while (solution[num_to_change] == 1);
         solution[num_to_change] = 1;
     }
 
@@ -96,15 +99,17 @@ public class Solution {
 
     public void repair_solution(int k) {
         int count = count_points();
-        do {
+        while (count != k) {
             //If the number of 1s is smaller than k, add 1s random
             if (count > k)
-                change_random_point_to_zero();
+                for (int i = 0; i < (count - k); i++)
+                    change_random_point_to_zero();
             //If the number of 1s is higher than k, remove 1s random
             if (count < k)
-                change_random_point_to_one();
+                for (int i = 0; i < (k - count); i++)
+                    change_random_point_to_one();
             count = count_points();
-        } while (count != k);
+        }
     }
 
     public void recombine_solution(int start, int end, Solution solution) {
@@ -116,16 +121,11 @@ public class Solution {
         }
     }
 
-    public void swap_solution(Solution solution) {
-        this.solution = solution.getSolution();
-        this.cost = solution.getCost();
-        this.copy = solution.getCopy();
-    }
-
     public int count_points() {
         int k = 0;
         for (int j : solution)
-            if (j == 1) k++;
+            if (j == 1)
+                k++;
         return k;
     }
 
@@ -133,20 +133,23 @@ public class Solution {
         return solution;
     }
 
-    public void setSolution(int[] solution) {
-        this.solution = solution;
-    }
-
     public int[] getCopy() {
         return copy;
     }
 
-    public void setCopy(int[] copy) {
-        this.copy = copy;
+    public void resetCopy() {
+        Arrays.fill(copy, 0);
     }
 
     public int getCost() {
         return cost;
+    }
+
+    //Setters
+    public void swap_solution(Solution solution) {
+        this.solution = solution.getSolution();
+        this.cost = solution.getCost();
+        this.copy = solution.getCopy();
     }
 
     @Override

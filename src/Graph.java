@@ -7,7 +7,7 @@ public class Graph {
 
     private ArrayList<Edge> edgeList;
 
-    private static final int NUM_ITE = 1000;
+    private static final int NUM_ITE = 10;
     private static final int POP_SIZE = 10; //Must keep pairs, bc of parents
     private static final float REPAIR_CHANCE = 0.2F;
     private static final float COMBINE_CHANCE = 0.5F;
@@ -45,7 +45,7 @@ public class Graph {
         //initialize the best global with a random solution
         best_global = new Solution(k, vertices, edgeList);
 
-        ArrayList<Solution> parents = new ArrayList<>();
+        ArrayList<Solution> parents;
 
         int i = 0;
         for (; i < runs; i++) {
@@ -58,15 +58,16 @@ public class Graph {
             //Genetic operator, each with its own chance
             func.genetic_operators(parents, population, COMBINE_CHANCE, REPAIR_CHANCE);
 
+            //Applies hill climbing to the solution, trying to find a smaller cost solution
+            hill_climbing(population);
+
             //Check if the solutions are valid
             //They must have k 1s
             func.check_valid_solution(population, k);
             //Checks if they are valid solutions
             //They must not have cost = 0
-            func.repair(population, edgeList);
+            func.repair(population, k, edgeList);
 
-            //Applies hill climbing to the solution, trying to find a smaller cost solution
-            hill_climbing(population);
             System.out.println("Rep: " + (i+1));
             //Gets the best solution of the population
             best_local = get_best(population);

@@ -12,16 +12,11 @@ public class func {
         /*
         Copy the number of 1s in the origin solution and copy
         The difference will be used to penalize the solution
-
-        TODO CRIAR ESTRATEGIAS PARA PENALIZAR OU REPARAR
-        TODO LATER:
-        IMPLEMENTAR ESTRATEGIAS
-        2 OPERADORES DE RECOMBINACAO E 2 OPE DE MUTACAO
-        2 METODOS DE SELECAO
-
-        METODO HIBRIDO
-        2 ABORDAGENS HIBRIDAS USANDO OS 2 ALGORITMOS
         */
+
+        //Makes the copy all 0s again
+        solution.resetCopy();
+
         int cost = 0;
         for (Edge edge : edgeList) {
             if (solution.getSolution()[edge.getStart() - 1] == 1 && solution.getSolution()[edge.getEnd() - 1] == 1) {
@@ -45,34 +40,76 @@ public class func {
         return Arrays.equals(solution.getSolution(), solution.getCopy()) ? cost : 0;
     }
 
-    public static void repair(ArrayList<Solution> population, ArrayList<Edge> edgeList) {
+    public static void repair(ArrayList<Solution> population, int k, ArrayList<Edge> edgeList) {
         //Repair only invalid solutions
-        population.stream().
-                filter(solution -> !Arrays.equals(solution.getSolution(), solution.getCopy())).
-                forEach(solution -> solution.repair_invalid_solution(edgeList));
+        population.forEach(solution -> {
+            solution.repair_invalid_solution(edgeList);
+            solution.repair_solution(k);
+        });
     }
 
+    //Tournament size 2
     public static ArrayList<Solution> tournament(ArrayList<Solution> population) {
 
         ArrayList<Solution> parents = new ArrayList<>();
+        //Creates a parents array the same size as population
+        for (int i = 0; i < population.size(); i++) {
+            parents.add(new Solution(population.get(0).getSolution().length));
+        }
 
-        //gets the best 2 solutions to be parents
-        Solution best = population.get(0), second = population.get(1);
-        //Iterate the population
-        population.forEach(solution -> {
-            //get the best solution
-            if (solution.getCost() < best.getCost()) {
-                second.swap_solution(best);
-                best.swap_solution(solution);
+        int x1, x2;
+
+        for (int i = 0; i < population.size(); i++) {
+            x1 = random.nextInt(population.size());
+            do {
+                x2 = random.nextInt(population.size());
+            } while (x1 == x2);
+            if(population.get(x1).getCost() < population.get(x2).getCost())
+                parents.get(i).swap_solution(population.get(x1));
+            else
+                parents.get(i).swap_solution(population.get(x2));
+        }
+        return parents;
+    }
+
+    //Tournament variable size
+    public static ArrayList<Solution> bigger_tournament(ArrayList<Solution> population, int tournament_size) {
+
+        ArrayList<Solution> parents = new ArrayList<>();
+        //Creates a parents array the same size as population
+        for (int i = 0; i < population.size(); i++) {
+            parents.add(new Solution(population.get(0).getSolution().length));
+        }
+
+        int new_x, counter = 0, to_discard = 0;
+        int[] x = new int[tournament_size];
+        int this_cost, best_cost;
+
+        for (int i = 0; i < population.size(); i++) {
+            x[0] = random.nextInt(population.size());
+            best_cost = population.get(x[0]).getCost();
+
+            while (counter < tournament_size) {
+                new_x = random.nextInt(population.size());
+
+                for (int j = 0; j <= counter; j++) {
+                    if (x[j] == new_x) {
+                        to_discard = 1;
+                        break;
+                    }
+                }
+                if (to_discard == 0) {
+                    x[counter] = new_x;
+                    this_cost = population.get(new_x).getCost();
+
+                    if (this_cost < best_cost) {
+                        parents.get(i).swap_solution(population.get(new_x));
+                        best_cost = this_cost;
+                    }
+                    counter++;
+                }
             }
-            //gets the second-best solution
-            else if (solution.getCost() < second.getCost() && solution != best)
-                second.swap_solution(solution);
-        });
-
-        parents.add(best);
-        parents.add(second);
-
+        }
         return parents;
     }
 
@@ -87,9 +124,9 @@ public class func {
     
     //One point separation
     public static void one_point_split(ArrayList<Solution> parents, ArrayList<Solution> population, float combine_chance) {
-        for (int i = 0; i < population.size(); i+=2) {
+        for (int i = 0; i < parents.size(); i+=2) {
             if (random.nextFloat() < combine_chance) {
-                int point = random.nextInt(population.get(0).getSolution().length - 1);
+                int point = random.nextInt(population.get(0).getSolution().length);
 
                 //From the beginning until the point
                 population.get(i).recombine_solution(0, point, parents.get(i));
@@ -107,7 +144,7 @@ public class func {
     }
     
     public static void two_point_split(ArrayList<Solution> parents, ArrayList<Solution> population, float combine_chance) {
-        for (int i = 0; i < population.size(); i+=2) {
+        for (int i = 0; i < parents.size(); i+=2) {
             if (random.nextFloat() < combine_chance) {
                 int point_two, point_one;
                 //Initialize the points
@@ -140,7 +177,7 @@ public class func {
     }
     
     public static void uniform_recombine(ArrayList<Solution> parents, ArrayList<Solution> population, float combine_chance) {
-        for (int i = 0; i < population.size(); i+=2) {
+        for (int i = 0; i < parents.size(); i+=2) {
             //Initialize the offspring
             population.get(i).swap_solution(parents.get(i));
             population.get(i + 1).swap_solution(parents.get(i + 1));
