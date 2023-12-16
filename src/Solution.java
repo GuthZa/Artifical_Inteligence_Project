@@ -156,7 +156,7 @@ public class Solution {
     public String toString() {
         return "Solution{" +
                 Arrays.toString(solution) +
-                ", cost=" + cost +
+                ", \ncost=" + cost +
                 '}';
     }
 }

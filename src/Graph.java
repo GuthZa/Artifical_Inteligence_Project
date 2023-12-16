@@ -8,9 +8,9 @@ public class Graph {
     private ArrayList<Edge> edgeList;
 
     private static final int NUM_ITE = 1000;
-    private static final int POP_SIZE = 10; //Must keep even
-    private static final float REPAIR_CHANCE = 0.2F;
-    private static final float COMBINE_CHANCE = 0.5F;
+    private static final int POP_SIZE = 100; //Must keep even
+    private static final float MUTATION_CHANCE = 0.01F;
+    private static final float COMBINE_CHANCE = 0.3F;
     private static final int TOURNAMENT_SIZE = 4; //Must keep even
     private static final int NUM_GEN = 2500;
 
@@ -48,6 +48,7 @@ public class Graph {
         best_global = new Solution(vertices);
         best_local = new Solution(vertices);
 
+        System.out.println("Initial: ");
         int i = 0;
         for (; i < runs; i++) {
             //Initializes the parents
@@ -55,7 +56,6 @@ public class Graph {
             for (int j = 0; j < TOURNAMENT_SIZE; j++) {
                 parents.add(new Solution(vertices));
             }
-            System.out.println("Initial: ");
             create_Starting_Population();
 
             for (int j = 0; j < NUM_GEN; j++) {
@@ -66,7 +66,7 @@ public class Graph {
                     func.bigger_tournament(population, parents, TOURNAMENT_SIZE);
 
                 //Genetic operator, each with its own chance
-                func.genetic_operators(parents, population, COMBINE_CHANCE, REPAIR_CHANCE);
+                func.genetic_operators(parents, population, COMBINE_CHANCE, MUTATION_CHANCE);
 
                 //Check if the solutions are valid
                 //They MUST have k number of 1s
@@ -78,7 +78,7 @@ public class Graph {
             //Applies hill climbing to the solution, trying to find a smaller cost solution
             //The neighbor checks the cost
             //The hill climbing discards any solution that has cost == 0
-            func.hill_climbing(NUM_ITE, population, edgeList);
+//           func.hill_climbing(NUM_ITE, population, edgeList);
 
             System.out.println("Rep: " + (i+1));
             //Gets the best solution of the population

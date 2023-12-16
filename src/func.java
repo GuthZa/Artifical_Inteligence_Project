@@ -114,9 +114,9 @@ public class func {
     }
     
     //One point separation
-    public static void one_point_split(ArrayList<Solution> parents, ArrayList<Solution> offspring, float combine_chance) {
+    public static void one_point_split(ArrayList<Solution> parents, ArrayList<Solution> offspring, float chance) {
         for (int i = 0; i < parents.size(); i+=2) {
-            if (random.nextFloat() < combine_chance) {
+            if (random.nextFloat() < chance) {
                 int point = random.nextInt(offspring.get(0).getSolution().length);
 
                 //From the beginning until the point
@@ -134,9 +134,9 @@ public class func {
         }
     }
     
-    public static void two_point_split(ArrayList<Solution> parents, ArrayList<Solution> population, float combine_chance) {
+    public static void two_point_split(ArrayList<Solution> parents, ArrayList<Solution> population, float chance) {
         for (int i = 0; i < parents.size(); i+=2) {
-            if (random.nextFloat() < combine_chance) {
+            if (random.nextFloat() < chance) {
                 int point_two, point_one;
                 //Initialize the points
                 point_one = random.nextInt(population.get(0).getSolution().length);
@@ -167,7 +167,7 @@ public class func {
         }
     }
     
-    public static void uniform_recombine(ArrayList<Solution> parents, ArrayList<Solution> population, float combine_chance) {
+    public static void uniform_recombine(ArrayList<Solution> parents, ArrayList<Solution> population, float chance) {
         for (int i = 0; i < parents.size(); i+=2) {
             //Initialize the offspring
             population.get(i).set_solution(parents.get(i));
@@ -175,7 +175,7 @@ public class func {
 
             for (int j = 0; j < population.get(i).getSolution().length; j++) {
                 //There's a chance to swap the positions of the
-                if(random.nextFloat() < combine_chance) {
+                if(random.nextFloat() < chance) {
                     population.get(i).getSolution()[j] = parents.get(i + 1).getSolution()[j];
                     population.get(i + 1).getSolution()[j] = parents.get(i).getSolution()[j];
                 }
