@@ -8,10 +8,11 @@ public class Graph {
     private ArrayList<Edge> edgeList;
 
     private static final int NUM_ITE = 10;
-    private static final int POP_SIZE = 10; //Must keep pairs, bc of parents
+    private static final int POP_SIZE = 10; //Must keep even
     private static final float REPAIR_CHANCE = 0.2F;
     private static final float COMBINE_CHANCE = 0.5F;
-    private static final int tournament_size = 5;
+    private static final int TOURNAMENT_SIZE = 4; //Must keep even
+    private static final int NUM_GEN = 50;
 
     //edge, k
     private int vertices, k;
@@ -43,39 +44,41 @@ public class Graph {
             e.printStackTrace();
         }
 
-        //initialize the best global with a random solution
-        best_global = new Solution(k, vertices, edgeList);
-
-        ArrayList<Solution> parents;
+        //initialize the best and local global with empty solutions
+        best_global = new Solution(vertices);
+        best_local = new Solution(vertices);
 
         int i = 0;
         for (; i < runs; i++) {
+            //Initializes the parents
+            ArrayList<Solution> parents = new ArrayList<>();
+            for (int j = 0; j < POP_SIZE; j++) {
+                parents.add(new Solution(vertices));
+            }
             System.out.println("Initial: ");
             create_Starting_Population();
 
-            //Generates the parents to use for genetic modifications
-            parents = func.tournament(population);
+            for (int j = 0; j < NUM_GEN; j++) {
+                //Generates the parents to use for genetic modifications
+                if (Math.random() < 0.5)
+                    func.tournament(population, parents);
+                else
+                    func.bigger_tournament(population, parents, TOURNAMENT_SIZE);
 
-            System.out.println("Population:");
-            population.forEach(System.out::println);
+                //Genetic operator, each with its own chance
+                func.genetic_operators(parents, population, COMBINE_CHANCE, REPAIR_CHANCE);
 
-            //Genetic operator, each with its own chance
-            func.genetic_operators(parents, population, COMBINE_CHANCE, REPAIR_CHANCE);
-
-            System.out.println("Population:");
-            population.forEach(System.out::println);
-
-            //Check if the solutions are valid
-            //They MUST have k number of 1s
-            //They MUST NOT have cost = 0
-            func.repair(population, k, edgeList);
+                //Check if the solutions are valid
+                //They MUST have k number of 1s
+                //They MUST NOT have cost = 0
+                func.repair(population, k, edgeList);
+                best_local.set_solution(get_best(population));
+            }
 
             //Applies hill climbing to the solution, trying to find a smaller cost solution
             //The neighbor checks the cost
             //The hill climbing discards any solution that has cost == 0
             func.hill_climbing(NUM_ITE, population, edgeList);
-
-
 
             System.out.println("Rep: " + (i+1));
             //Gets the best solution of the population

@@ -48,13 +48,7 @@ public class func {
     }
 
     //Tournament size 2
-    public static ArrayList<Solution> tournament(ArrayList<Solution> population) {
-
-        ArrayList<Solution> parents = new ArrayList<>();
-        //Creates a parents array the same size as population
-        for (int i = 0; i < population.size(); i++) {
-            parents.add(new Solution(population.get(0).getSolution().length));
-        }
+    public static void tournament(ArrayList<Solution> population, ArrayList<Solution> parents) {
 
         int x1, x2;
 
@@ -69,37 +63,31 @@ public class func {
             else
                 parents.get(i).set_solution(population.get(x2));
         }
-        return parents;
     }
 
     //Tournament variable size
-    public static ArrayList<Solution> bigger_tournament(ArrayList<Solution> population, int tournament_size) {
+    public static void bigger_tournament(ArrayList<Solution> population, ArrayList<Solution> parents , int tournament_size) {
 
-        //TODO: check if this tournament is getting the best solutions more often
-        ArrayList<Solution> parents = new ArrayList<>();
-        //Creates a parents array the same size as population
-        for (int i = 0; i < population.size(); i++) {
-            parents.add(new Solution(population.get(0).getSolution().length));
-        }
-
-        int new_x, counter = 0, to_discard = 0;
+        int new_x, counter = 0,  aux;
         int[] x = new int[tournament_size];
         int this_cost, best_cost;
+        boolean to_discard;
 
         for (int i = 0; i < population.size(); i++) {
-            x[0] = random.nextInt(population.size());
-            best_cost = population.get(x[0]).getCost();
+            aux = random.nextInt(population.size());
+            best_cost = population.get(aux).getCost();
 
             while (counter < tournament_size) {
+                to_discard = false;
                 new_x = random.nextInt(population.size());
 
                 for (int j = 0; j <= counter; j++) {
                     if (x[j] == new_x) {
-                        to_discard = 1;
+                        to_discard = true;
                         break;
                     }
                 }
-                if (to_discard == 0) {
+                if (!to_discard) {
                     x[counter] = new_x;
                     this_cost = population.get(new_x).getCost();
 
@@ -111,14 +99,16 @@ public class func {
                 }
             }
         }
-        return parents;
     }
 
     public static void genetic_operators(ArrayList<Solution> parents, ArrayList<Solution> offspring, float combine_chance, float mutation_chance) {
 
+        //Combination algorithms
         one_point_split(parents, offspring, combine_chance);
         two_point_split(parents, offspring, combine_chance);
-        uniform_recombine(parents, offspring, combine_chance);
+
+        //Mutation algorithms
+        uniform_recombine(parents, offspring, mutation_chance);
         mutation(offspring, mutation_chance);
 
     }
