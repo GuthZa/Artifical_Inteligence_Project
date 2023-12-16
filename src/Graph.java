@@ -10,9 +10,11 @@ public class Graph {
     private static final int NUM_ITE = 1000;
     private static final int POP_SIZE = 100; //Must keep even
     private static final float MUTATION_CHANCE = 0.01F;
-    private static final float COMBINE_CHANCE = 0.3F;
+    private static final float COMBINE_CHANCE = 0.5F;
     private static final int TOURNAMENT_SIZE = 4; //Must keep even
     private static final int NUM_GEN = 2500;
+    private static final boolean USE_GENETIC = true;
+    private static final boolean USE_HILL_CLIMBING = true;
 
     //edge, k
     private int vertices, k;
@@ -24,7 +26,7 @@ public class Graph {
 
     public void run() {
         String file_name;
-        int runs = 10, best_cost = 0;
+        int runs = 10;
         double mbf = 0.0;
         Solution best_global, best_local;
 
@@ -58,35 +60,39 @@ public class Graph {
             }
             create_Starting_Population();
 
-            for (int j = 0; j < NUM_GEN; j++) {
-                //Generates the parents to use for genetic modifications
-                if (Math.random() < 0.5)
-                    func.tournament(population, parents);
-                else
-                    func.bigger_tournament(population, parents, TOURNAMENT_SIZE);
+            if (USE_GENETIC) {
+                for (int j = 0; j < NUM_GEN; j++) {
+                    //Generates the parents to use for genetic modifications
+                    if (Math.random() < 0.5)
+                        func.tournament(population, parents);
+                    else
+                        func.bigger_tournament(population, parents, TOURNAMENT_SIZE);
 
-                //Genetic operator, each with its own chance
-                func.genetic_operators(parents, population, COMBINE_CHANCE, MUTATION_CHANCE);
+                    //Genetic operator, each with its own chance
+                    func.genetic_operators(parents, population, COMBINE_CHANCE, MUTATION_CHANCE);
 
-                //Check if the solutions are valid
-                //They MUST have k number of 1s
-                //They MUST NOT have cost = 0
-                func.repair(population, k, edgeList);
-                best_local.set_solution(get_best(population));
+                    //Check if the solutions are valid
+                    //They MUST have k number of 1s
+                    //They MUST NOT have cost = 0
+                    func.repair(population, k, edgeList);
+                    best_local.set_solution(get_best(population));
+                }
             }
 
             //Applies hill climbing to the solution, trying to find a smaller cost solution
             //The neighbor checks the cost
             //The hill climbing discards any solution that has cost == 0
-//           func.hill_climbing(NUM_ITE, population, edgeList);
+            if (USE_HILL_CLIMBING)
+                func.hill_climbing(NUM_ITE, population, edgeList);
 
             System.out.println("Rep: " + (i+1));
             //Gets the best solution of the population
             best_local = get_best(population);
             System.out.println(best_local);
+            System.out.println(best_local.getNum_points());
             mbf += best_local.getCost();
             //Saves the best cost of the whole run
-            if (i == 0 || best_cost < best_local.getCost())
+            if (i == 0 || best_global.getCost() > best_local.getCost())
                 best_global.set_solution(best_local);
             //For better readability
             System.out.println();
