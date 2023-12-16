@@ -52,16 +52,16 @@ public class func {
 
         int x1, x2;
 
-        for (int i = 0; i < population.size(); i++) {
+        for (Solution parent : parents) {
             x1 = random.nextInt(population.size());
             do {
                 x2 = random.nextInt(population.size());
             } while (x1 == x2);
 
-            if(population.get(x1).getCost() < population.get(x2).getCost())
-                parents.get(i).set_solution(population.get(x1));
+            if (population.get(x1).getCost() < population.get(x2).getCost())
+                parent.set_solution(population.get(x1));
             else
-                parents.get(i).set_solution(population.get(x2));
+                parent.set_solution(population.get(x2));
         }
     }
 
@@ -73,7 +73,7 @@ public class func {
         int this_cost, best_cost;
         boolean to_discard;
 
-        for (int i = 0; i < population.size(); i++) {
+        for (Solution parent : parents) {
             aux = random.nextInt(population.size());
             best_cost = population.get(aux).getCost();
 
@@ -92,7 +92,7 @@ public class func {
                     this_cost = population.get(new_x).getCost();
 
                     if (this_cost < best_cost) {
-                        parents.get(i).set_solution(population.get(new_x));
+                        parent.set_solution(population.get(new_x));
                         best_cost = this_cost;
                     }
                     counter++;

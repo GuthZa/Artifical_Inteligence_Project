@@ -7,12 +7,12 @@ public class Graph {
 
     private ArrayList<Edge> edgeList;
 
-    private static final int NUM_ITE = 10;
+    private static final int NUM_ITE = 1000;
     private static final int POP_SIZE = 10; //Must keep even
     private static final float REPAIR_CHANCE = 0.2F;
     private static final float COMBINE_CHANCE = 0.5F;
     private static final int TOURNAMENT_SIZE = 4; //Must keep even
-    private static final int NUM_GEN = 50;
+    private static final int NUM_GEN = 2500;
 
     //edge, k
     private int vertices, k;
@@ -52,7 +52,7 @@ public class Graph {
         for (; i < runs; i++) {
             //Initializes the parents
             ArrayList<Solution> parents = new ArrayList<>();
-            for (int j = 0; j < POP_SIZE; j++) {
+            for (int j = 0; j < TOURNAMENT_SIZE; j++) {
                 parents.add(new Solution(vertices));
             }
             System.out.println("Initial: ");
